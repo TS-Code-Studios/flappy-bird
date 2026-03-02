@@ -2,27 +2,19 @@
 
 #include <caffeine-gl/base.h>
 
-int WIDTH;
-int HEIGHT;
-
-void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
+CaffeineWindow* testWindow;
 
 int main() {
-	glfwSetKeyCallback(key_callback);
+	testWindow = new CaffeineWindow();
 
-	if(!glfwInit()) {
-		std::cerr << "Failed to initialize GLFW" << std::endl;
-		return -1;
+	testWindow->createViewport();
+	testWindow->setWindowTitle("Test");
+
+	while(!glfwWindowShouldClose(testWindow->window)) {
+		glfwSwapBuffers(testWindow->window);
+		glfwPollEvents();
 	}
 
-	GLFWmonitor* primaryMonitor = glfwGetPrimaryMonitor();
-	const GLFWvidmode* videoMode = glfwGetVideoMode(primaryMonitor);
-
-	WIDTH = videoMode->width;
-	HEIGHT = videoMode->height;
-}
-
-void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode) {
-	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-		glfwSetWindowShouldClose(window, GL_TRUE);
+	testWindow->~CaffeineWindow();
+	exit(EXIT_SUCCESS);
 }
