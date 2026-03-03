@@ -1,20 +1,15 @@
 #include <iostream>
 
-#include <caffeine-gl/base.h>
-
-CaffeineWindow* testWindow;
+#include <caffeine-gl/base.hpp>
 
 int main() {
-	testWindow = new CaffeineWindow();
+	const CaffeineWindow testWindow("Test Window");
 
-	testWindow->createViewport();
-	testWindow->setWindowTitle("Test");
+	testWindow.createViewport();
 
-	while(!glfwWindowShouldClose(testWindow->window)) {
-		glfwSwapBuffers(testWindow->window);
-		glfwPollEvents();
+	while(!testWindow.keys[GLFW_KEY_ESCAPE]) {
+		testWindow.update();
 	}
 
-	testWindow->~CaffeineWindow();
 	exit(EXIT_SUCCESS);
 }
