@@ -19,3 +19,12 @@ target_link_libraries(flappy_bird PRIVATE
         caffeine_gl
 )
 
+add_custom_command(TARGET $CMAKE_PROJECT_NAME POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+    ${CMAKE_SOURCE_DIR}/resources
+    $<TARGET_FILE_DIR:${CMAKE_PROJECT_NAME}>/resources
+)
+
+add_compile_definitions(flappy_bird PRIVATE
+    RESOURCE_ROOT="${CMAKE_SOURCE_DIR}/resources"
+)
