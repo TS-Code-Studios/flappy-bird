@@ -5,6 +5,8 @@ add_subdirectory(caffeine-gl)
 
 add_executable(flappy_bird
     src/main.cpp
+        src/game/FlappyBirdGame.cpp
+        include/game/FlappyBirdGame.hpp
 )
 
 target_compile_features(flappy_bird PRIVATE cxx_std_20)
