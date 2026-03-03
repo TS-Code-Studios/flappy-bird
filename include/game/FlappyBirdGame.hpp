@@ -5,13 +5,16 @@
 
 class FlappyBirdGame : public CaffeineGame {
 public:
+	int WIDTH, HEIGHT;
+
 	SpriteRenderer* renderer;
 
 	explicit FlappyBirdGame(CaffeineWindow& window);
+	~FlappyBirdGame() override;
 
-	void Init() override;
-	void Update(float deltaTime) override;
-	void Render() override;
+	void init() override;
+	void update(float deltaTime) override;
+	void render() override;
 };
 
 #endif //FLAPPYBIRDGAME_HPP
