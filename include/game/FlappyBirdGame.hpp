@@ -7,7 +7,7 @@ class FlappyBirdGame : public CaffeineGame {
 public:
 	int WIDTH, HEIGHT;
 
-	SpriteRenderer* renderer;
+	Renderer* renderer;
 
 	explicit FlappyBirdGame(CaffeineWindow& window);
 	~FlappyBirdGame() override;

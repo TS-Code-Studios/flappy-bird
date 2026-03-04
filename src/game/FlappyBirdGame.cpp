@@ -7,7 +7,7 @@ FlappyBirdGame::FlappyBirdGame(CaffeineWindow &window) {
 	ResourceManager::setResourceRoot(ResourceManager::getExecutablePath() / "resources");
 	ResourceManager::loadShader("shaders/default.vert", "shaders/default.frag", nullptr, "default");
 
-	renderer = new SpriteRenderer(ResourceManager::getShader("default"));
+	renderer = new Renderer(ResourceManager::getShader("default"));
 }
 
 void FlappyBirdGame::init() {
