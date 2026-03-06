@@ -1,10 +1,10 @@
 #include <game/FlappyBirdGame.hpp>
 
 FlappyBirdGame::FlappyBirdGame(CaffeineWindow &window) {
-	WIDTH = window.WIDTH;
-	HEIGHT = window.HEIGHT;
+	WIDTH = static_cast<float>(window.WIDTH);
+	HEIGHT = static_cast<float>(window.HEIGHT);
 
-	renderer = new Renderer();
+	renderer = new Renderer(WIDTH, HEIGHT);
 }
 CaffeineMeshDrawable* test;
 void FlappyBirdGame::init() {
@@ -23,6 +23,7 @@ void FlappyBirdGame::init() {
 			&ResourceManager::getTexture("placeholder")
 		}
 	);
+
 
 	const glm::vec2 centerOfScreen(WIDTH / 2.0f, HEIGHT / 2.0f);
 	test->move(centerOfScreen);

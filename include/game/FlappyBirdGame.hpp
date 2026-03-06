@@ -3,9 +3,9 @@
 
 #include <caffeine-gl/base.hpp>
 
-class FlappyBirdGame : public CaffeineGame {
+class FlappyBirdGame final : public CaffeineGame {
 public:
-	int WIDTH, HEIGHT;
+	float WIDTH, HEIGHT;
 
 	Renderer* renderer;
 
