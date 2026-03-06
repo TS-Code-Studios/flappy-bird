@@ -10,6 +10,8 @@ int main() {
 
 	FlappyBirdGame flappyBird(testWindow);
 
+	flappyBird.init();
+
 	while(!testWindow.keys[GLFW_KEY_ESCAPE]) {
 		flappyBird.render();
 		testWindow.update();
