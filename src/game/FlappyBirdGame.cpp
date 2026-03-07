@@ -6,13 +6,14 @@ FlappyBirdGame::FlappyBirdGame(CaffeineWindow &window) {
 
 	renderer = new Renderer(WIDTH, HEIGHT);
 }
+
 CaffeineMeshDrawable* test;
 void FlappyBirdGame::init() {
 	ResourceManager::setResourceRoot(ResourceManager::getExecutablePath() / "resources");
 
 	ResourceManager::createDefaultMeshes();
 	ResourceManager::loadShader("shaders/default.vert", "shaders/default.frag", nullptr, "default");
-	ResourceManager::loadTexture("textures/missing_texture.png", true, "placeholder");
+	ResourceManager::loadTexture("textures/missing_texture.png", "placeholder");
 
 
 
@@ -34,8 +35,7 @@ void FlappyBirdGame::update(float deltaTime) {
 }
 
 void FlappyBirdGame::render() {
-	test->submitToRenderer(*renderer);
-	renderer->renderAll();
+	ResourceManager::renderAllDrawables(*renderer);
 }
 
 
