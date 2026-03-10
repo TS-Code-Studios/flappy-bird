@@ -5,12 +5,7 @@
 
 class FlappyBirdGame final : public CaffeineGame {
 public:
-	float WIDTH, HEIGHT;
-
-	Renderer* renderer;
-
-	explicit FlappyBirdGame(CaffeineWindow& window);
-	~FlappyBirdGame() override;
+	FlappyBirdGame() = default;
 
 	void init() override;
 	void update(float deltaTime) override;

@@ -1,15 +1,9 @@
 #include <game/FlappyBirdGame.hpp>
 
-FlappyBirdGame::FlappyBirdGame(CaffeineWindow &window) {
-	WIDTH = static_cast<float>(window.WIDTH);
-	HEIGHT = static_cast<float>(window.HEIGHT);
-
-	renderer = new Renderer(WIDTH, HEIGHT);
-}
-
 CaffeineMeshDrawable* test;
-CaffeineMeshDrawable* test2;
-glm::vec2 velocity(0.1f, 0.0f);
+CaffeineMeshDrawable* bird;
+glm::vec2 velocity(100.0f, 0.0f);
+
 void FlappyBirdGame::init() {
 	ResourceManager::setResourceRoot(ResourceManager::getExecutablePath() / "resources");
 
@@ -19,7 +13,8 @@ void FlappyBirdGame::init() {
 	ResourceManager::loadTexture("textures/bird.jpeg", "bird");
 	
 
-	test2 = ResourceManager::createGameObject<CaffeineMeshDrawable>(
+	bird = ResourceManager::createGameObject<CaffeineMeshDrawable>(
+		0,
 		ResourceManager::getMesh("quad"),
 		Material{
 			&ResourceManager::getShader("default"),
@@ -28,6 +23,7 @@ void FlappyBirdGame::init() {
 	);
 
 	test = ResourceManager::createGameObject<CaffeineMeshDrawable>(
+		10,
 		ResourceManager::getMesh("quad"),
 		Material{
 			&ResourceManager::getShader("default"),
@@ -35,33 +31,20 @@ void FlappyBirdGame::init() {
 		}
 	);
 
-	const glm::vec2 bottom_left(WIDTH / 4.0f, HEIGHT / 4.0f);
-	test2->move(bottom_left);
-	test2->scale(glm::vec2(100.0f));
+	const glm::vec2 bottom_left(virtualWidth / 4.0f, virtualHeight / 4.0f);
+	bird->move(bottom_left);
+	bird->scale(glm::vec2(100.0f));
 
-	const glm::vec2 centerOfScreen(WIDTH / 2.0f, HEIGHT / 2.0f);
+	const glm::vec2 centerOfScreen(virtualWidth / 2.0f, virtualHeight / 2.0f);
 	test->move(centerOfScreen);
 	test->scale(glm::vec2(100.0f));
 
 }
 
-void FlappyBirdGame::update(float deltaTime) {
-	static float elapsedTime = 0.0f;
-	elapsedTime += deltaTime;
-	if (elapsedTime < 5.0f) {
-		return;
-	}
-	elapsedTime = 0.0f;
+void FlappyBirdGame::update(const float deltaTime) {
 	test->move(velocity * deltaTime);
 }
 
 void FlappyBirdGame::render() {
-	ResourceManager::renderAllDrawables(*renderer);
-}
-
-
-
-FlappyBirdGame::~FlappyBirdGame() {
-	ResourceManager::clear();
-	delete renderer;
+	ResourceManager::renderAllDrawables();
 }
