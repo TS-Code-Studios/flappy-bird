@@ -32,17 +32,17 @@ void FlappyBirdGame::init() {
 	);
 
 	const glm::vec2 bottom_left(virtualWidth / 4.0f, virtualHeight / 4.0f);
-	bird->move(bottom_left);
-	bird->scale(glm::vec2(100.0f));
+	bird->setLocation(bottom_left);
+	bird->setSize(glm::vec2(100.0f));
 
 	const glm::vec2 centerOfScreen(virtualWidth / 2.0f, virtualHeight / 2.0f);
-	test->move(centerOfScreen);
-	test->scale(glm::vec2(100.0f));
+	test->setLocation(centerOfScreen);
+	test->setSize(glm::vec2(100.0f));
 
 }
 
 void FlappyBirdGame::update(const float deltaTime) {
-	test->move(velocity * deltaTime);
+	test->translate(velocity * deltaTime);
 }
 
 void FlappyBirdGame::render() {
