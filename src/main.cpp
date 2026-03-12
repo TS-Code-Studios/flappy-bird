@@ -12,7 +12,7 @@ int main() {
 	CaffeineWindow testWindow("Test Window");
 	testWindow.createViewport();
 
-	FlappyBirdGame flappyBird{};
+	FlappyBirdGame flappyBird(testWindow);
 
 	flappyBird.init();
 
