@@ -2,7 +2,7 @@
 
 FlappyBirdGame::FlappyBirdGame(CaffeineWindow& window) : window(window) {
 	gameVel = glm::vec2(-10.0f, 0.0f);
-	birdVel = glm::vec2(550.0f, 0.0f);
+	birdVel = glm::vec2(0.0f);
 	boost = 550.0f;
 	gravity = -800.0f;
 
