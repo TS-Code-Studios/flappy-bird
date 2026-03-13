@@ -6,8 +6,10 @@
 class FlappyBirdGame final : public CaffeineGame {
 public:
 	CaffeineMeshDrawable *bird;
-	CaffeineMeshDrawable *pipe1, *pipe2, *pipe3, *pipe4, *pipe5;
+	CaffeineMeshDrawable *pipe0, *pipe1, *pipe2, *pipe3, *pipe4;
 	CaffeineWindow& window;
+
+	bool pipeUsed[5]; 
 
 	FlappyBirdGame(CaffeineWindow& window);
 
@@ -18,16 +20,19 @@ public:
 
 	void resetGame();
 	void checkGameOver();
+	void spawnPipe(); //void??????????????
 
 	glm::vec2 birdSpawn;
 
 	glm::vec2 gameVel;
 	glm::vec2 birdVel;
+
 	float boost;
 	float gravity;
 
 	int score;
 	bool gameOver;
+	bool gameActive;
 };
 
 #endif //FLAPPYBIRDGAME_HPP
