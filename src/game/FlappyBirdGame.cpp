@@ -14,9 +14,9 @@ FlappyBirdGame::FlappyBirdGame(CaffeineWindow& window) : window(window) {
 	birdSpawn = glm::vec2(virtualWidth / 4.0f, virtualHeight / 2.0f);
 
 	lastPipeSpawnTime = 0.0f;
+	gamePaused = true;
+}	
 
-	gamePaused = false;
-}
 
 FlappyBirdGame::~FlappyBirdGame() {
 	for(int i = 0; i < sizeof(pipePairs) / sizeof(pipePairs[0]); i++) {
@@ -32,8 +32,8 @@ void FlappyBirdGame::init() {
 	ResourceManager::loadShader("shaders/default.vert", "shaders/default.frag", nullptr, "default");
 	
 	ResourceManager::loadTexture("textures/missing_texture.png", "placeholder");
-	ResourceManager::loadTexture("textures/bird.jpeg", "bird");
-	ResourceManager::loadTexture("textures/pipe.png", "pipe");
+	ResourceManager::loadTexture("textures/bird.png", "bird");
+	ResourceManager::loadTexture("textures/pipe.jpeg", "pipe");
 
 	bird = ResourceManager::createGameObject<CaffeineMeshDrawable>(
 		0, ResourceManager::getMesh("quad"),
@@ -54,7 +54,7 @@ void FlappyBirdGame::init() {
 	// }
 
 	bird->setLocation(birdSpawn);
-	bird->setSize(glm::vec2(100.0f));
+	bird->setSize(glm::vec2(80.0f));
 
 	for(int i = 0; i < sizeof(pipePairs) / sizeof(pipePairs[0]); i++) {
 		pipePairs[i] = new PipePair();
@@ -126,9 +126,7 @@ void FlappyBirdGame::resetGame() {
 	score = 0;
 	gamePaused = false;
 	bird->setLocation(birdSpawn);
-	birdVel = glm::vec2(0.0f, startBoost);
-	birdVel.y += gravity * 0.000001f;
-	bird->translate(birdVel * 0.000001f);
+	birdVel = glm::vec2(0.0f, boost);
 }
 
 void FlappyBirdGame::checkGameOver() {

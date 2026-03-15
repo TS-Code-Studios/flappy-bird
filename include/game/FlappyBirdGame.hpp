@@ -25,8 +25,8 @@ struct PipePair {
 				&ResourceManager::getShader("default"),
 				&ResourceManager::getTexture("pipe")
 		});
-		topPipe->setSize(glm::vec2(300.0f));
-		bottomPipe->setSize(glm::vec2(300.0f));
+		topPipe->setSize(glm::vec2(100.0f, 600.0f));
+		bottomPipe->setSize(glm::vec2(100.0f, 600.0f));
 		bottomPipe->setRotation(180.0f);
 		topPipe->visible = false;
 		bottomPipe->visible = false;
@@ -37,8 +37,8 @@ struct PipePair {
 		topPipe->visible = true;
 		bottomPipe->visible = true;
 		
-		yOffset = static_cast<float>(rand() % static_cast<int>((virtualHeight / 2.7) + 0.04f * (virtualHeight)));//damit in 66% des bildschirms
-		gapSize = static_cast<float>(rand() % 300 + 600); //abhängig von größe relevant??
+		yOffset = static_cast<float>(rand() % static_cast<int>((virtualHeight / 2.7) /*+ 0.04f * (virtualHeight)*/));//damit in 66% des bildschirms
+		gapSize = static_cast<float>(rand() % 400 + 2000); //abhängig von größe relevant??
 		
 		topPipe->setLocation(glm::vec2(virtualWidth, yOffset));		//ändern
 		bottomPipe->setLocation(glm::vec2(virtualWidth, ((yOffset + gapSize >= virtualHeight) ? virtualHeight : yOffset + gapSize)));
