@@ -3,12 +3,22 @@
 FlappyBirdGame::FlappyBirdGame(CaffeineWindow& window) : window(window) {
 	boost = 550.0f;
 	gravity = -800.0f;
+	pipeSpawnRateChance = 1000; //je höher, desto seltener
+	pipeSpawnRateMin = 3.0f; 
 
 	birdVel = glm::vec2(0.0f, boost);
-	gameVel = glm::vec2(-10.0f, 0.0f);
+	gameVel = glm::vec2(-100.0f, 0.0f);
 	
 
 	birdSpawn = glm::vec2(virtualWidth / 4.0f, virtualHeight / 2.0f);
+
+	
+}
+
+FlappyBirdGame::~FlappyBirdGame() {
+	for(int i = 0; i < sizeof(pipePairs) / sizeof(pipePairs[0]); i++) {
+		delete pipePairs[i];
+	}
 }
 
 void FlappyBirdGame::init() {
@@ -29,51 +39,36 @@ void FlappyBirdGame::init() {
 			&ResourceManager::getTexture("bird")
 	});
 
-	pipe0 = ResourceManager::createGameObject<CaffeineMeshDrawable>(
-		0, ResourceManager::getMesh("quad"),
-		Material{
-			&ResourceManager::getShader("default"),
-			&ResourceManager::getTexture("pipe")
-	});
 
-	pipe1 = ResourceManager::createGameObject<CaffeineMeshDrawable>(
-		0, ResourceManager::getMesh("quad"),
-		Material{
-			&ResourceManager::getShader("default"),
-			&ResourceManager::getTexture("pipe")
-	});
 
-	pipe2 = ResourceManager::createGameObject<CaffeineMeshDrawable>(
-		0, ResourceManager::getMesh("quad"),
-		Material{
-			&ResourceManager::getShader("default"),
-			&ResourceManager::getTexture("pipe")
-	});
-
-	pipe3 = ResourceManager::createGameObject<CaffeineMeshDrawable>(
-		0, ResourceManager::getMesh("quad"),
-		Material{
-			&ResourceManager::getShader("default"),
-			&ResourceManager::getTexture("pipe")
-	});
-
-	pipe4 = ResourceManager::createGameObject<CaffeineMeshDrawable>(
-		0, ResourceManager::getMesh("quad"),
-		Material{
-			&ResourceManager::getShader("default"),
-			&ResourceManager::getTexture("pipe")
-	});
+	// for (CaffeineMeshDrawable*& pipe : pipes) {
+	// 	pipe = ResourceManager::createGameObject<CaffeineMeshDrawable>(
+	// 		0, ResourceManager::getMesh("quad"),
+	// 		Material{
+	// 			&ResourceManager::getShader("default"),
+	// 			&ResourceManager::getTexture("pipe")
+	// 	});
+	// }
 
 	bird->setLocation(birdSpawn);
 	bird->setSize(glm::vec2(100.0f));
+
+	for(int i = 0; i < sizeof(pipePairs) / sizeof(pipePairs[0]); i++) {
+		pipePairs[i] = new PipePair();
+	}
 }
 
 void FlappyBirdGame::update(const float deltaTime) {
 	processInput();
 	spawnPipe();
+	despawnPipe();
+	for (PipePair*& pipePair : pipePairs) {
+		pipePair->move(deltaTime, gameVel.x);
+	}
 	birdVel.y += gravity * deltaTime;
 	bird->translate(birdVel * deltaTime);
 	checkGameOver();
+
 }
 
 void FlappyBirdGame::processInput() {
@@ -94,20 +89,31 @@ void FlappyBirdGame::processInput() {
 }
 
 void FlappyBirdGame::spawnPipe() {
-	if (rand() % 200 == 0) {
-		float pipeHeight = static_cast<float>(rand() % static_cast<int>((virtualHeight / 2) + 0.05f * (virtualHeight)));//damit in 66% des bildschirms
-		float gapSize = static_cast<float>(rand() % 300 + 600); //abhängig von größe relevant??
-		
-		// if (!pipeUsed[0]) {
-			// 	pipeUsed[0] = true;
-			// } 
-		pipe0->setSize(glm::vec2(300.0f));
-		pipe1->setSize(glm::vec2(300.0f));
-		pipe1->setRotation(180.0f);
-		pipe0->setLocation(glm::vec2(virtualWidth, pipeHeight));		//ändern
-		pipe1->setLocation(glm::vec2(virtualWidth, ((pipeHeight + gapSize >= virtualHeight) ? virtualHeight : pipeHeight + gapSize)));	//ändern
+	float lastSpawn;
+	std::cout << static_cast<float>(glfwGetTime()) << "    ";
+	std::cout << static_cast<float>(glfwGetTime()) << std::endl;
+	if (static_cast<float>(glfwGetTime()) - lastSpawn > pipeSpawnRateMin) {
+		if (rand() % pipeSpawnRateChance == 0) {
+			std::cout << "Spawning pipe..." << std::endl;
+			int freePipeIndex;
+			for (PipePair*& pipePair : pipePairs) {
+				if (!pipePair->used) {
+					pipePair->spawn(virtualWidth, virtualHeight);
+					lastSpawn = static_cast<float>(glfwGetTime());
+					break;
+				}
+			}
+		}
 	}
 	// float pipeHeight = static_cast<float>(rand() % (static_cast<int>(virtualHeight / 2.0f)-100));
+}
+
+void FlappyBirdGame::despawnPipe() {
+	for (PipePair*& pipePair : pipePairs) {
+		if (pipePair->used && pipePair->topPipe->transform.position.x < 300.0f) {
+			pipePair->despawn();
+		}
+	}
 }
 
 void FlappyBirdGame::resetGame() {
@@ -121,7 +127,6 @@ void FlappyBirdGame::resetGame() {
 void FlappyBirdGame::checkGameOver() {
 	if (bird->transform.position.y < 0.0f || bird->transform.position.y > virtualHeight) {
 		gameOver = true;
-		std::cout << "Game Over! Final Score: " << score << std::endl;
 	}
 }
 
