@@ -11,7 +11,7 @@ FlappyBirdGame::FlappyBirdGame(CaffeineWindow& window) : window(window) {
 	gameVel = glm::vec2(-100.0f, 0.0f);
 	
 
-	birdSpawn = glm::vec2(200.0f, virtualHeight / 2.0f);
+	birdSpawn = glm::vec2(250.0f, 540.0f);
 
 	lastPipeSpawnTime = 0.0f;
 	gamePaused = true;
