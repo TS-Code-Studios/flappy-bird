@@ -4,14 +4,14 @@ FlappyBirdGame::FlappyBirdGame(CaffeineWindow& window) : window(window) {
 	boost = 550.0f;
 	startBoost = 800.0f;
 	gravity = -900.0f;
-	pipeSpawnRateChance = 1000; //je höher, desto seltener
-	pipeSpawnRateMin = 4.0f; //zeitgestuert???? wass wenn level schneller?
+	pipeSpawnRateChance = 202; //je höher, desto seltener
+	pipeSpawnRateMin = 5.0f; //zeitgestuert???? wass wenn level schneller?
 
 	birdVel = glm::vec2(0.0f, startBoost);
 	gameVel = glm::vec2(-100.0f, 0.0f);
 	
 
-	birdSpawn = glm::vec2(virtualWidth / 4.0f, virtualHeight / 2.0f);
+	birdSpawn = glm::vec2(200.0f, virtualHeight / 2.0f);
 
 	lastPipeSpawnTime = 0.0f;
 	gamePaused = true;
@@ -115,7 +115,7 @@ void FlappyBirdGame::spawnPipe() {
 
 void FlappyBirdGame::despawnPipe() {
 	for (PipePair*& pipePair : pipePairs) {
-		if (pipePair->used && pipePair->topPipe->transform.position.x < 200.0f) {
+		if (pipePair->used && pipePair->topPipe->transform.position.x < 100.0f) {
 			pipePair->despawn();
 		}
 	}
