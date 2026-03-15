@@ -74,7 +74,6 @@ void FlappyBirdGame::update(const float deltaTime) {
 		bird->translate(birdVel * deltaTime);
 	}
 	checkGameOver();
-	if (gamePaused) {std::cout << "Game Over!" << std::endl;}
 }
 
 void FlappyBirdGame::processInput() {
