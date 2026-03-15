@@ -2,17 +2,18 @@
 
 FlappyBirdGame::FlappyBirdGame(CaffeineWindow& window) : window(window) {
 	boost = 550.0f;
-	gravity = -800.0f;
+	startBoost = 1000.0f;
+	gravity = -900.0f;
 	pipeSpawnRateChance = 1000; //je höher, desto seltener
-	pipeSpawnRateMin = 3.0f; 
+	pipeSpawnRateMin = 0.0f; //zeitgestuert???? wass wenn level schneller?
 
-	birdVel = glm::vec2(0.0f, boost);
+	birdVel = glm::vec2(0.0f, startBoost);
 	gameVel = glm::vec2(-100.0f, 0.0f);
 	
 
 	birdSpawn = glm::vec2(virtualWidth / 4.0f, virtualHeight / 2.0f);
 
-	
+	lastPipeSpawnTime = 0.0f;
 }
 
 FlappyBirdGame::~FlappyBirdGame() {
@@ -89,17 +90,19 @@ void FlappyBirdGame::processInput() {
 }
 
 void FlappyBirdGame::spawnPipe() {
-	float lastSpawn;
-	std::cout << static_cast<float>(glfwGetTime()) << "    ";
-	std::cout << static_cast<float>(glfwGetTime()) << std::endl;
-	if (static_cast<float>(glfwGetTime()) - lastSpawn > pipeSpawnRateMin) {
+	// std::cout << static_cast<float>(glfwGetTime()) << "    ";
+	// std::cout << lastPipeSpawnTime << "    ";
+	// for (PipePair*& pipePair : pipePairs) {
+	// 			std::cout << pipePair->used << "    ";
+	// }
+	std::cout << std::endl;
+	if (static_cast<float>(glfwGetTime()) - lastPipeSpawnTime > pipeSpawnRateMin) {
 		if (rand() % pipeSpawnRateChance == 0) {
-			std::cout << "Spawning pipe..." << std::endl;
 			int freePipeIndex;
 			for (PipePair*& pipePair : pipePairs) {
 				if (!pipePair->used) {
 					pipePair->spawn(virtualWidth, virtualHeight);
-					lastSpawn = static_cast<float>(glfwGetTime());
+					lastPipeSpawnTime = static_cast<float>(glfwGetTime());
 					break;
 				}
 			}
@@ -110,7 +113,7 @@ void FlappyBirdGame::spawnPipe() {
 
 void FlappyBirdGame::despawnPipe() {
 	for (PipePair*& pipePair : pipePairs) {
-		if (pipePair->used && pipePair->topPipe->transform.position.x < 300.0f) {
+		if (pipePair->used && pipePair->topPipe->transform.position.x < 200.0f) {
 			pipePair->despawn();
 		}
 	}
@@ -120,7 +123,7 @@ void FlappyBirdGame::resetGame() {
 	score = 0;
 	gameOver = false;
 	bird->setLocation(birdSpawn);
-	birdVel = glm::vec2(0.0f, boost);
+	birdVel = glm::vec2(0.0f, startBoost);
 	//gameActive = true;
 }
 

@@ -28,6 +28,8 @@ struct PipePair {
 		topPipe->setSize(glm::vec2(300.0f));
 		bottomPipe->setSize(glm::vec2(300.0f));
 		bottomPipe->setRotation(180.0f);
+		topPipe->visible = false;
+		bottomPipe->visible = false;
 	}
 
 	void spawn(float virtualWidth, float virtualHeight) {
@@ -39,7 +41,13 @@ struct PipePair {
 		gapSize = static_cast<float>(rand() % 300 + 600); //abhängig von größe relevant??
 		
 		topPipe->setLocation(glm::vec2(virtualWidth, yOffset));		//ändern
-		bottomPipe->setLocation(glm::vec2(virtualWidth, ((yOffset + gapSize >= virtualHeight) ? virtualHeight : yOffset + gapSize)));
+		//bottomPipe->setLocation(glm::vec2(virtualWidth, ((yOffset + gapSize >= virtualHeight) ? virtualHeight : yOffset + gapSize)));
+		if (yOffset + gapSize >= virtualHeight) {
+			bottomPipe->setLocation(glm::vec2(virtualWidth, 0.0f));
+			std::cout << "Pipe spawned with gap size " << gapSize << " at y offset " << yOffset << " (adjusted to fit on screen)" << std::endl;
+		} else {
+			bottomPipe->setLocation(glm::vec2(virtualWidth, yOffset + gapSize));
+		}
 	}
 
 	void despawn() {
@@ -82,13 +90,19 @@ public:
 	glm::vec2 birdVel;
 
 	float boost;
+	float startBoost;
 	float gravity;
+	
 	float pipeSpawnRateMin;
 	int pipeSpawnRateChance;
+	float lastPipeSpawnTime;
+
 
 	int score;
 	bool gameOver;
 	bool gameActive;
+
+	
 };
 
 #endif //FLAPPYBIRDGAME_HPP
