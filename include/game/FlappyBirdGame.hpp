@@ -37,17 +37,11 @@ struct PipePair {
 		topPipe->visible = true;
 		bottomPipe->visible = true;
 		
-		yOffset = static_cast<float>(rand() % static_cast<int>((virtualHeight / 2) + 0.05f * (virtualHeight)));//damit in 66% des bildschirms
+		yOffset = static_cast<float>(rand() % static_cast<int>((virtualHeight / 2.7) + 0.04f * (virtualHeight)));//damit in 66% des bildschirms
 		gapSize = static_cast<float>(rand() % 300 + 600); //abhängig von größe relevant??
 		
 		topPipe->setLocation(glm::vec2(virtualWidth, yOffset));		//ändern
-		//bottomPipe->setLocation(glm::vec2(virtualWidth, ((yOffset + gapSize >= virtualHeight) ? virtualHeight : yOffset + gapSize)));
-		if (yOffset + gapSize >= virtualHeight) {
-			bottomPipe->setLocation(glm::vec2(virtualWidth, 0.0f));
-			std::cout << "Pipe spawned with gap size " << gapSize << " at y offset " << yOffset << " (adjusted to fit on screen)" << std::endl;
-		} else {
-			bottomPipe->setLocation(glm::vec2(virtualWidth, yOffset + gapSize));
-		}
+		bottomPipe->setLocation(glm::vec2(virtualWidth, ((yOffset + gapSize >= virtualHeight) ? virtualHeight : yOffset + gapSize)));
 	}
 
 	void despawn() {
@@ -99,8 +93,7 @@ public:
 
 
 	int score;
-	bool gameOver;
-	bool gameActive;
+	bool gamePaused;
 
 	
 };

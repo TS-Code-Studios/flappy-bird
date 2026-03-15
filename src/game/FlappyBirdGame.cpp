@@ -2,10 +2,10 @@
 
 FlappyBirdGame::FlappyBirdGame(CaffeineWindow& window) : window(window) {
 	boost = 550.0f;
-	startBoost = 1000.0f;
+	startBoost = 800.0f;
 	gravity = -900.0f;
 	pipeSpawnRateChance = 1000; //je höher, desto seltener
-	pipeSpawnRateMin = 0.0f; //zeitgestuert???? wass wenn level schneller?
+	pipeSpawnRateMin = 4.0f; //zeitgestuert???? wass wenn level schneller?
 
 	birdVel = glm::vec2(0.0f, startBoost);
 	gameVel = glm::vec2(-100.0f, 0.0f);
@@ -14,6 +14,8 @@ FlappyBirdGame::FlappyBirdGame(CaffeineWindow& window) : window(window) {
 	birdSpawn = glm::vec2(virtualWidth / 4.0f, virtualHeight / 2.0f);
 
 	lastPipeSpawnTime = 0.0f;
+
+	gamePaused = false;
 }
 
 FlappyBirdGame::~FlappyBirdGame() {
@@ -61,30 +63,31 @@ void FlappyBirdGame::init() {
 
 void FlappyBirdGame::update(const float deltaTime) {
 	processInput();
-	spawnPipe();
-	despawnPipe();
-	for (PipePair*& pipePair : pipePairs) {
-		pipePair->move(deltaTime, gameVel.x);
-	}
-	birdVel.y += gravity * deltaTime;
-	bird->translate(birdVel * deltaTime);
-	checkGameOver();
 
+	if (!gamePaused) {
+		spawnPipe();
+		despawnPipe();
+		for (PipePair*& pipePair : pipePairs) {
+			pipePair->move(deltaTime, gameVel.x);
+		}
+		birdVel.y += gravity * deltaTime;
+		bird->translate(birdVel * deltaTime);
+	}
+	checkGameOver();
+	if (gamePaused) {std::cout << "Game Over!" << std::endl;}
 }
 
 void FlappyBirdGame::processInput() {
 	if (window.keys[GLFW_KEY_UP] && !window.processedKeys[GLFW_KEY_UP]) {
-		birdVel.y = boost;	
 		window.processedKeys[GLFW_KEY_UP] = true;
-	}
-	if (!window.keys[GLFW_KEY_SPACE] && window.processedKeys[GLFW_KEY_SPACE]) {
-		if (gameOver) {
+		birdVel.y = boost;	
+		if (gamePaused) {
 			resetGame();
 		}
 	}
 	if (window.keys[GLFW_KEY_V] && !window.processedKeys[GLFW_KEY_V]) {
-		window.toggleFullscreen();
 		window.processedKeys[GLFW_KEY_V] = true;
+		window.toggleFullscreen();
 	}
 	//else oder nicht else if
 }
@@ -121,16 +124,18 @@ void FlappyBirdGame::despawnPipe() {
 
 void FlappyBirdGame::resetGame() {
 	score = 0;
-	gameOver = false;
+	gamePaused = false;
 	bird->setLocation(birdSpawn);
 	birdVel = glm::vec2(0.0f, startBoost);
-	//gameActive = true;
+	birdVel.y += gravity * 0.000001f;
+	bird->translate(birdVel * 0.000001f);
 }
 
 void FlappyBirdGame::checkGameOver() {
 	if (bird->transform.position.y < 0.0f || bird->transform.position.y > virtualHeight) {
-		gameOver = true;
+		gamePaused = true;
 	}
+	//check collision with pipes
 }
 
 void FlappyBirdGame::render() {
