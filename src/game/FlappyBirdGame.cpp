@@ -97,13 +97,12 @@ void FlappyBirdGame::spawnPipe() {
 	// for (PipePair*& pipePair : pipePairs) {
 	// 			std::cout << pipePair->used << "    ";
 	// }
-	std::cout << std::endl;
 	if (static_cast<float>(glfwGetTime()) - lastPipeSpawnTime > pipeSpawnRateMin) {
 		if (rand() % pipeSpawnRateChance == 0) {
 			int freePipeIndex;
 			for (PipePair*& pipePair : pipePairs) {
 				if (!pipePair->used) {
-					pipePair->spawn(virtualWidth, virtualHeight);
+					pipePair->spawn();
 					lastPipeSpawnTime = static_cast<float>(glfwGetTime());
 					break;
 				}

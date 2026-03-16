@@ -35,7 +35,7 @@ struct PipePair {
 		bottomPipe->visible = false;
 	}
 
-	void spawn(float virtualWidth, float virtualHeight) {
+	void spawn() {
 		used = true;
 		topPipe->visible = true;
 		bottomPipe->visible = true;
