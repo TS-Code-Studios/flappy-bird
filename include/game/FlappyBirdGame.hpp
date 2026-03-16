@@ -7,12 +7,14 @@ struct PipePair {
 	CaffeineMeshDrawable* topPipe;
 	CaffeineMeshDrawable* bottomPipe;
 	bool used;
+	bool scored;
 
 	float gapSize;
 	float yOffset;
 
 	PipePair() {
 		used = false;
+		scored = false;
 		topPipe = ResourceManager::createGameObject<CaffeineMeshDrawable>(
 			0, ResourceManager::getMesh("quad"),
 			Material{
@@ -48,12 +50,13 @@ struct PipePair {
 		yOffset = static_cast<float>(rand() % 500 - 300); //damit in 66% des bildschirms
 		gapSize = static_cast<float>(rand() % 450 + 900); //abhängig von größe relevant??
 		
-		topPipe->setLocation(glm::vec2(1920, yOffset));		//ändern
-		bottomPipe->setLocation(glm::vec2(1920, ((yOffset + gapSize >= 1300) ? 1300 : yOffset + gapSize)));
+		topPipe->setLocation(glm::vec2(2000, yOffset));		//ändern
+		bottomPipe->setLocation(glm::vec2(2000, ((yOffset + gapSize >= 1300) ? 1300 : yOffset + gapSize)));
 	}
 
 	void despawn() {
 		used = false;
+		scored = false;
 		topPipe->visible = false;
 		bottomPipe->visible = false;
 	}
@@ -91,6 +94,7 @@ public:
 	glm::vec2 gameVel;
 	glm::vec2 birdVel;
 
+	float gameVelValue;
 	float boost;
 	float startBoost;
 	float gravity;
