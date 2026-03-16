@@ -1,15 +1,15 @@
 #include <game/FlappyBirdGame.hpp>
 
 FlappyBirdGame::FlappyBirdGame(CaffeineWindow& window) : window(window) {
+	gameVelValue = -100.0f;
 	boost = 550.0f;
 	startBoost = 800.0f;
 	gravity = -900.0f;
 	pipeSpawnRateChance = 202; //je höher, desto seltener
-	pipeSpawnRateMin = 5.0f; //zeitgestuert???? wass wenn level schneller?
+	pipeSpawnRateMin = 6.0f; //zeitgestuert???? wass wenn level schneller?
 
 	birdVel = glm::vec2(0.0f, startBoost);
-	gameVel = glm::vec2(-100.0f, 0.0f);
-	
+	gameVel = glm::vec2(gameVelValue, 0.0f);
 
 	birdSpawn = glm::vec2(250.0f, 540.0f);
 
@@ -45,17 +45,6 @@ void FlappyBirdGame::init() {
 	bird->collider = new Collider(bird, ColliderType::QUAD, glm::vec2(0.0f), glm::vec2(80.0f));
 	bird->collider->enable();
 
-
-
-	// for (CaffeineMeshDrawable*& pipe : pipes) {
-	// 	pipe = ResourceManager::createGameObject<CaffeineMeshDrawable>(
-	// 		0, ResourceManager::getMesh("quad"),
-	// 		Material{
-	// 			&ResourceManager::getShader("default"),
-	// 			&ResourceManager::getTexture("pipe")
-	// 	});
-	// }
-
 	bird->setLocation(birdSpawn);
 	bird->setSize(glm::vec2(80.0f));
 
@@ -66,12 +55,18 @@ void FlappyBirdGame::init() {
 
 void FlappyBirdGame::update(const float deltaTime) {
 	processInput();
-
+	gameVel.x = gameVelValue - (score * 100.0f);
 	if (!gamePaused) {
 		spawnPipe();
 		despawnPipe();
 		for (PipePair*& pipePair : pipePairs) {
 			pipePair->move(deltaTime, gameVel.x);
+			if (bird->transform.position.x > pipePair->topPipe->transform.position.x) {
+				if (pipePair->used && !pipePair->scored) {
+					score++;
+					pipePair->scored = true;
+				}
+			}
 		}
 		birdVel.y += gravity * deltaTime;
 		bird->translate(birdVel * deltaTime);
@@ -91,33 +86,23 @@ void FlappyBirdGame::processInput() {
 		window.processedKeys[GLFW_KEY_V] = true;
 		window.toggleFullscreen();
 	}
-	//else oder nicht else if
 }
 
 void FlappyBirdGame::spawnPipe() {
-	// std::cout << static_cast<float>(glfwGetTime()) << "    ";
-	// std::cout << lastPipeSpawnTime << "    ";
-	// for (PipePair*& pipePair : pipePairs) {
-	// 			std::cout << pipePair->used << "    ";
-	// }
 	if (static_cast<float>(glfwGetTime()) - lastPipeSpawnTime > pipeSpawnRateMin) {
-		if (rand() % pipeSpawnRateChance == 0) {
-			int freePipeIndex;
-			for (PipePair*& pipePair : pipePairs) {
-				if (!pipePair->used) {
-					pipePair->spawn();
-					lastPipeSpawnTime = static_cast<float>(glfwGetTime());
-					break;
-				}
+		for (PipePair*& pipePair : pipePairs) {
+			if (!pipePair->used) {
+				pipePair->spawn();
+				lastPipeSpawnTime = static_cast<float>(glfwGetTime());
+				break;
 			}
 		}
 	}
-	// float pipeHeight = static_cast<float>(rand() % (static_cast<int>(virtualHeight / 2.0f)-100));
 }
 
 void FlappyBirdGame::despawnPipe() {
 	for (PipePair*& pipePair : pipePairs) {
-		if (pipePair->used && pipePair->topPipe->transform.position.x < 100.0f) {
+		if (pipePair->used && pipePair->topPipe->transform.position.x < -100.0f) {
 			pipePair->despawn();
 		}
 	}
