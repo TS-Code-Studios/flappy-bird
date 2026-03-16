@@ -23,6 +23,7 @@ int main() {
 		lastFrame = currentFrame;
 
 		flappyBird.update(deltaTime);
+		CollisionSystem::update(deltaTime);
 		flappyBird.render();
 		window.update();
 	}

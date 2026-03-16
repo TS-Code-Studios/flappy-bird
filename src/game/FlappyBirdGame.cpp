@@ -42,6 +42,9 @@ void FlappyBirdGame::init() {
 			&ResourceManager::getTexture("bird")
 	});
 
+	bird->collider = new Collider(bird, ColliderType::QUAD, glm::vec2(0.0f), glm::vec2(80.0f));
+	bird->collider->enable();
+
 
 
 	// for (CaffeineMeshDrawable*& pipe : pipes) {

@@ -26,6 +26,11 @@ struct PipePair {
 				&ResourceManager::getTexture("pipe")
 		});
 
+		topPipe->collider = new Collider(topPipe, ColliderType::QUAD, glm::vec2(0.0f), glm::vec2(100.0f, 600.0f));
+		topPipe->collider->enable();
+		bottomPipe->collider = new Collider(bottomPipe, ColliderType::QUAD, glm::vec2(0.0f), glm::vec2(100.0f, 600.0f));
+		bottomPipe->collider->enable();
+
 		topPipe->setSize(glm::vec2(100.0f, 600.0f));
 		bottomPipe->setSize(glm::vec2(100.0f, 600.0f));
 
