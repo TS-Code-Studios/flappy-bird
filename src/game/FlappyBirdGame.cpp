@@ -103,7 +103,7 @@ void FlappyBirdGame::spawnPipe() {
 			int freePipeIndex;
 			for (PipePair*& pipePair : pipePairs) {
 				if (!pipePair->used) {
-					pipePair->spawn(virtualWidth, virtualHeight);
+					pipePair->spawn();
 					lastPipeSpawnTime = static_cast<float>(glfwGetTime());
 					break;
 				}
