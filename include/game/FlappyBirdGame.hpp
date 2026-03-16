@@ -2,6 +2,7 @@
 #define FLAPPYBIRDGAME_HPP
 
 #include <caffeine-gl/base.hpp>
+//gap generation
 
 struct PipePair {
 	CaffeineMeshDrawable* topPipe;
@@ -28,13 +29,13 @@ struct PipePair {
 				&ResourceManager::getTexture("pipe")
 		});
 
-		topPipe->collider = new Collider(topPipe, ColliderType::QUAD, glm::vec2(0.0f), glm::vec2(100.0f, 600.0f));
+		topPipe->collider = new Collider(topPipe, ColliderType::STATIC, ColliderShape::QUAD, glm::vec2(0.0f), glm::vec2(100.0f, 600.0f));
 		topPipe->collider->enable();
-		bottomPipe->collider = new Collider(bottomPipe, ColliderType::QUAD, glm::vec2(0.0f), glm::vec2(100.0f, 600.0f));
+		bottomPipe->collider = new Collider(bottomPipe, ColliderType::STATIC, ColliderShape::QUAD, glm::vec2(0.0f), glm::vec2(100.0f, 600.0f));
 		bottomPipe->collider->enable();
 
-		topPipe->setSize(glm::vec2(100.0f, 600.0f));
-		bottomPipe->setSize(glm::vec2(100.0f, 600.0f));
+		topPipe->setSize(glm::vec2(140.0f, 800.0f));
+		bottomPipe->setSize(glm::vec2(140.0f, 800.0f));
 
 		bottomPipe->setRotation(180.0f);
 
@@ -47,10 +48,10 @@ struct PipePair {
 		topPipe->visible = true;
 		bottomPipe->visible = true;
 		
-		yOffset = static_cast<float>(rand() % 500 - 300); //damit in 66% des bildschirms
-		gapSize = static_cast<float>(rand() % 450 + 900); //abhängig von größe relevant??
+		yOffset = static_cast<float>(rand() % 500 - 300);
+		gapSize = static_cast<float>(rand() % 450 + 900);
 		
-		topPipe->setLocation(glm::vec2(2000, yOffset));		//ändern
+		topPipe->setLocation(glm::vec2(2000, yOffset));
 		bottomPipe->setLocation(glm::vec2(2000, ((yOffset + gapSize >= 1300) ? 1300 : yOffset + gapSize)));
 	}
 
@@ -86,8 +87,11 @@ public:
 
 	void resetGame();
 	void checkGameOver();
+
 	void spawnPipe();
 	void despawnPipe();
+
+	void rotateBird();
 
 	glm::vec2 birdSpawn;
 
@@ -95,12 +99,13 @@ public:
 	glm::vec2 birdVel;
 
 	float gameVelValue;
+
 	float boost;
 	float startBoost;
 	float gravity;
+	float acceleration;
 	
 	float pipeSpawnRateMin;
-	int pipeSpawnRateChance;
 	float lastPipeSpawnTime;
 
 

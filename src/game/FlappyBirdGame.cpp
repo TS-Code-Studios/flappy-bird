@@ -3,9 +3,9 @@
 FlappyBirdGame::FlappyBirdGame(CaffeineWindow& window) : window(window) {
 	gameVelValue = -100.0f;
 	boost = 550.0f;
-	startBoost = 800.0f;
+	startBoost = 100.0f;
 	gravity = -900.0f;
-	pipeSpawnRateChance = 202; //je höher, desto seltener
+	acceleration = 10.0f;
 	pipeSpawnRateMin = 6.0f; //zeitgestuert???? wass wenn level schneller?
 
 	birdVel = glm::vec2(0.0f, startBoost);
@@ -33,7 +33,7 @@ void FlappyBirdGame::init() {
 	
 	ResourceManager::loadTexture("textures/missing_texture.png", "placeholder");
 	ResourceManager::loadTexture("textures/bird.png", "bird");
-	ResourceManager::loadTexture("textures/pipe.jpeg", "pipe");
+	ResourceManager::loadTexture("textures/pipe.png", "pipe");
 
 	bird = ResourceManager::createGameObject<CaffeineMeshDrawable>(
 		0, ResourceManager::getMesh("quad"),
@@ -42,11 +42,14 @@ void FlappyBirdGame::init() {
 			&ResourceManager::getTexture("bird")
 	});
 
-	bird->collider = new Collider(bird, ColliderType::QUAD, glm::vec2(0.0f), glm::vec2(80.0f));
-	bird->collider->enable();
-
 	bird->setLocation(birdSpawn);
-	bird->setSize(glm::vec2(80.0f));
+	bird->setSize(glm::vec2(190.0f));
+
+	bird->collider = new Collider(bird, ColliderType::DYNAMIC, ColliderShape::QUAD, glm::vec2(0.0f), glm::vec2(80.0f));
+	bird->collider->enable();
+	bird->collider->collisionCallback = [this](CaffeineGameObject& otherGameObject) {
+		gamePaused = true;
+	};
 
 	for(int i = 0; i < sizeof(pipePairs) / sizeof(pipePairs[0]); i++) {
 		pipePairs[i] = new PipePair();
@@ -55,7 +58,7 @@ void FlappyBirdGame::init() {
 
 void FlappyBirdGame::update(const float deltaTime) {
 	processInput();
-	gameVel.x = gameVelValue - (score * 100.0f);
+	gameVel.x = gameVelValue - (score * acceleration);
 	if (!gamePaused) {
 		spawnPipe();
 		despawnPipe();
@@ -68,6 +71,7 @@ void FlappyBirdGame::update(const float deltaTime) {
 				}
 			}
 		}
+		rotateBird();
 		birdVel.y += gravity * deltaTime;
 		bird->translate(birdVel * deltaTime);
 	}
@@ -77,7 +81,10 @@ void FlappyBirdGame::update(const float deltaTime) {
 void FlappyBirdGame::processInput() {
 	if (window.keys[GLFW_KEY_UP] && !window.processedKeys[GLFW_KEY_UP]) {
 		window.processedKeys[GLFW_KEY_UP] = true;
-		birdVel.y = boost;	
+		birdVel.y = boost;
+	}
+	if (window.keys[GLFW_KEY_SPACE] && !window.processedKeys[GLFW_KEY_SPACE]) {
+		window.processedKeys[GLFW_KEY_SPACE] = true;
 		if (gamePaused) {
 			resetGame();
 		}
@@ -112,7 +119,11 @@ void FlappyBirdGame::resetGame() {
 	score = 0;
 	gamePaused = false;
 	bird->setLocation(birdSpawn);
-	birdVel = glm::vec2(0.0f, boost);
+	birdVel = glm::vec2(0.0f, startBoost);
+	for (PipePair*& pipePair : pipePairs) {
+		pipePair->despawn();
+	}
+	std::cout << "Game reset!" << std::endl;
 }
 
 void FlappyBirdGame::checkGameOver() {
@@ -120,6 +131,11 @@ void FlappyBirdGame::checkGameOver() {
 		gamePaused = true;
 	}
 	//check collision with pipes
+}
+
+void FlappyBirdGame::rotateBird() {
+	float rotation = pow(std::abs(birdVel.y) / boost, 1.0f / 1.0f) * 10.0f;
+	(birdVel.y >= 0) ? bird->setRotation(rotation) : bird->setRotation(-rotation);
 }
 
 void FlappyBirdGame::render() {
