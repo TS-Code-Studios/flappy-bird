@@ -3,6 +3,8 @@
 
 #include <caffeine-gl/base.hpp>
 //gap generation
+//den rest an schnellerres siel anpassen, pipe und spirngen
+//death animation
 
 struct PipePair {
 	CaffeineMeshDrawable* topPipe;
@@ -28,14 +30,15 @@ struct PipePair {
 				&ResourceManager::getShader("default"),
 				&ResourceManager::getTexture("pipe")
 		});
-
-		topPipe->collider = new Collider(topPipe, ColliderType::STATIC, ColliderShape::QUAD, glm::vec2(0.0f), glm::vec2(100.0f, 600.0f));
-		topPipe->collider->enable();
-		bottomPipe->collider = new Collider(bottomPipe, ColliderType::STATIC, ColliderShape::QUAD, glm::vec2(0.0f), glm::vec2(100.0f, 600.0f));
-		bottomPipe->collider->enable();
-
-		topPipe->setSize(glm::vec2(140.0f, 800.0f));
+		topPipe->setSize(glm::vec2(-140.0f, 800.0f));
 		bottomPipe->setSize(glm::vec2(140.0f, 800.0f));
+
+		topPipe->collider = new Collider(topPipe, ColliderType::STATIC, ColliderShape::QUAD, 
+			glm::vec2(0.0f), glm::vec2(std::abs(topPipe->transform.size.x), topPipe->transform.size.y));
+		topPipe->collider->enable();
+		bottomPipe->collider = new Collider(bottomPipe, ColliderType::STATIC, ColliderShape::QUAD, 
+			glm::vec2(0.0f), glm::vec2(std::abs(bottomPipe->transform.size.x), bottomPipe->transform.size.y));
+		bottomPipe->collider->enable();
 
 		bottomPipe->setRotation(180.0f);
 
@@ -48,8 +51,9 @@ struct PipePair {
 		topPipe->visible = true;
 		bottomPipe->visible = true;
 		
-		yOffset = static_cast<float>(rand() % 500 - 300);
-		gapSize = static_cast<float>(rand() % 450 + 900);
+		gapSize = static_cast<float>(/*rand() % 400*/ + 1000);
+		yOffset = 0;
+		// yOffset = static_cast<float>(rand() % 500 - 300);
 		
 		topPipe->setLocation(glm::vec2(2000, yOffset));
 		bottomPipe->setLocation(glm::vec2(2000, ((yOffset + gapSize >= 1300) ? 1300 : yOffset + gapSize)));
@@ -60,6 +64,8 @@ struct PipePair {
 		scored = false;
 		topPipe->visible = false;
 		bottomPipe->visible = false;
+		topPipe->setLocation(glm::vec2(2000, -200.0f));
+		bottomPipe->setLocation(glm::vec2(2000, -200.0f));
 	}
 
 	void move(float deltaTime, float gameVel) {
@@ -74,6 +80,8 @@ class FlappyBirdGame final : public CaffeineGame {
 public:
 	CaffeineMeshDrawable *bird;
 	PipePair *pipePairs[10];
+	CaffeineMeshDrawable *background;
+	CaffeineMeshDrawable *background2;
 	CaffeineWindow& window;
 
 	FlappyBirdGame(CaffeineWindow& window);
@@ -87,9 +95,12 @@ public:
 
 	void resetGame();
 	void checkGameOver();
+	void birdDying(float deltaTime);
 
 	void spawnPipe();
 	void despawnPipe();
+	void movePipes(float deltaTime);
+	void moveBackground(float deltaTime, float gameVel);
 
 	void rotateBird();
 
@@ -111,8 +122,7 @@ public:
 
 	int score;
 	bool gamePaused;
-
-	
+	bool birdIsDying;
 };
 
 #endif //FLAPPYBIRDGAME_HPP
