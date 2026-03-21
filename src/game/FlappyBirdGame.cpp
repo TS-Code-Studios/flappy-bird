@@ -1,12 +1,12 @@
 #include <game/FlappyBirdGame.hpp>
 
 FlappyBirdGame::FlappyBirdGame(CaffeineWindow& window) : window(window) {
-	gameVelValue = -100.0f;
+	gameVelValue = -200.0f;
 	boost = 550.0f;
 	startBoost = 100.0f;
 	gravity = -900.0f;
-	acceleration = 10.0f;
-	pipeSpawnRateMin = 6.0f; //zeitgestuert???? wass wenn level schneller?
+	acceleration = 40.0f;
+	pipeSpawnRateMin = 4.0f; //zeitgestuert???? wass wenn level schneller?
 
 	birdVel = glm::vec2(0.0f, startBoost);
 	gameVel = glm::vec2(gameVelValue, 0.0f);
@@ -66,6 +66,7 @@ void FlappyBirdGame::init() {
 	bird->collider->enable();
 	bird->collider->collisionCallback = [this](CaffeineGameObject& otherGameObject) {
 		gamePaused = true;
+		birdIsDying = true;
 	};
 
 	background->setLocation(glm::vec2(virtualWidth / 2, virtualHeight / 2));
@@ -78,10 +79,11 @@ void FlappyBirdGame::init() {
 	}
 }
 
-void FlappyBirdGame::update(const float deltaTime) {
+void FlappyBirdGame::update(const float deltaTime_) {
 	processInput();
+	float deltaTime = deltaTime_ /*+ deltaTime_ * score * acceleration*/;
 	if (!gamePaused) {
-		gameVel.x = gameVelValue - (score * acceleration);
+		//gameVel.x = gameVelValue - (score * acceleration);
 		moveBackground(deltaTime, gameVel.x);
 		
 		movePipes(deltaTime);
@@ -101,7 +103,9 @@ void FlappyBirdGame::update(const float deltaTime) {
 void FlappyBirdGame::processInput() {
 	if (window.keys[GLFW_KEY_UP] && !window.processedKeys[GLFW_KEY_UP]) {
 		window.processedKeys[GLFW_KEY_UP] = true;
-		birdVel.y = boost;
+		if (!gamePaused) {
+			birdVel.y = boost;
+		}
 	}
 	if (window.keys[GLFW_KEY_SPACE] && !window.processedKeys[GLFW_KEY_SPACE]) {
 		window.processedKeys[GLFW_KEY_SPACE] = true;
@@ -187,12 +191,21 @@ void FlappyBirdGame::checkGameOver() {
 }
 
 void FlappyBirdGame::birdDying(float deltaTime) {
-	glm::vec2 deathVel = glm::vec2(0.0f, boost);
+	if (bird->transform.rotation < 90.0f) {
+		bird->rotate(200.0f * deltaTime);
+	}
+	else {
+		bird->rotate(100.0f * deltaTime);
+	}
+	if (bird->transform.position.y < 0.0f) {
+		birdIsDying = false;
+	}
 	birdVel.y += gravity * deltaTime;
+	bird->translate(birdVel * deltaTime);
 }
 
 void FlappyBirdGame::rotateBird() {
-	float rotation = pow(std::abs(birdVel.y) / boost, 1.0f / 1.0f) * 10.0f;
+	float rotation = std::abs(birdVel.y) / boost * 10.0f;
 	(birdVel.y >= 0) ? bird->setRotation(rotation) : bird->setRotation(-rotation);
 }
 
