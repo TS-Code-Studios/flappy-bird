@@ -13,7 +13,8 @@ int main() {
 	window.createViewport();
 	window.toggleFullscreen();
 
-	FlappyBirdGame flappyBird(window);
+	CaffeineWorld world;
+	FlappyBirdGame flappyBird(window, world);
 
 	flappyBird.init();
 
@@ -23,10 +24,10 @@ int main() {
 		lastFrame = currentFrame;
 
 		flappyBird.update(deltaTime);
-		CollisionSystem::update(deltaTime);
 		flappyBird.render();
 		window.update();
 	}
-
+	world.clear();
+	ResourceManager::clear();
 	return 0;
 }

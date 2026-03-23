@@ -8,94 +8,94 @@
 //hintergrund aufteilen
 
 struct PipePair {
-	CaffeineMeshDrawable* bottomPipe;
-	CaffeineMeshDrawable* topPipe;
+	CaffeineEntity bottomPipe;
+	CaffeineEntity topPipe;
+	CaffeineWorld& world;
 	bool used;
 	bool scored;
 
 	float gapSize;
 	float yOffset;
+	glm::vec2 &gameVel;
 
-	PipePair() {
+	PipePair(CaffeineWorld& world, glm::vec2 &gameVel) : world(world), gameVel(gameVel) {
 		used = false;
 		scored = false;
-		bottomPipe = ResourceManager::createGameObject<CaffeineMeshDrawable>(
-			0, ResourceManager::getMesh("quad"),
-			Material{
-				&ResourceManager::getShader("default"),
-				&ResourceManager::getTexture("pipe")
-		});
-		topPipe = ResourceManager::createGameObject<CaffeineMeshDrawable>(
-			0, ResourceManager::getMesh("quad"),
-			Material{
-				&ResourceManager::getShader("default"),
-				&ResourceManager::getTexture("pipe")
-		});
-		bottomPipe->setSize(glm::vec2(-140.0f, 800.0f));
-		topPipe->setSize(glm::vec2(140.0f, 800.0f));
+		
+		world.addComponent<CaffeineTransformComponent>(bottomPipe, {glm::vec2(2000, -200.0f),  0.0f, glm::vec2(-140.0f, 800.0f)});
+		world.addComponent<CaffeineRenderComponent>(bottomPipe, {false, 0});
+		world.addComponent<CaffeineMeshComponent>(bottomPipe, {&ResourceManager::getMesh("quad")});
+		world.addComponent<CaffeineMaterialComponent>(bottomPipe, {&ResourceManager::getShader("default"),
+			&ResourceManager::getTexture("pipe")});
+		world.addComponent<CaffeineColliderComponent>(bottomPipe, {ColliderType::STATIC, ColliderShape::QUAD, true,
+			glm::vec2(0.0f), glm::vec2(std::abs(world.getComponent<CaffeineTransformComponent>(bottomPipe).size.x), world.getComponent<CaffeineTransformComponent>(bottomPipe).size.y), 
+			nullptr});
+		world.addComponent<CaffeineVelocityComponent>(bottomPipe, {gameVel});
 
-		bottomPipe->collider = new Collider(bottomPipe, ColliderType::STATIC, ColliderShape::QUAD, 
-			glm::vec2(0.0f), glm::vec2(std::abs(bottomPipe->transform.size.x), bottomPipe->transform.size.y));
-		bottomPipe->collider->enable();
-		topPipe->collider = new Collider(topPipe, ColliderType::STATIC, ColliderShape::QUAD, 
-			glm::vec2(0.0f), glm::vec2(std::abs(topPipe->transform.size.x), topPipe->transform.size.y));
-		topPipe->collider->enable();
 
-		topPipe->setRotation(180.0f);
-
-		bottomPipe->visible = false;
-		topPipe->visible = false;
+		world.addComponent<CaffeineTransformComponent>(topPipe, {glm::vec2(2000, -200.0f),  180.0f, glm::vec2(140.0f, 800.0f)});
+		world.addComponent<CaffeineRenderComponent>(topPipe, {false, 0});
+		world.addComponent<CaffeineMeshComponent>(topPipe, {&ResourceManager::getMesh("quad")});
+		world.addComponent<CaffeineMaterialComponent>(topPipe, {&ResourceManager::getShader("default"),
+			&ResourceManager::getTexture("pipe")});
+		world.addComponent<CaffeineColliderComponent>(topPipe, {ColliderType::STATIC, ColliderShape::QUAD, true,
+			glm::vec2(0.0f), glm::vec2(std::abs(world.getComponent<CaffeineTransformComponent>(topPipe).size.x), world.getComponent<CaffeineTransformComponent>(topPipe).size.y), 
+			nullptr});
+		world.addComponent<CaffeineVelocityComponent>(topPipe, {gameVel});
 	}
 
 	void spawn() {
 		used = true;
-		bottomPipe->visible = true;
-		topPipe->visible = true;
+		world.getComponent<CaffeineRenderComponent>(bottomPipe).visible = true;
+		world.getComponent<CaffeineRenderComponent>(topPipe).visible = true;
+		
 		
 		gapSize = static_cast<float>(rand() % 400 + 1000);
 		yOffset = static_cast<float>(rand() % static_cast<int>(1680 - gapSize))-300;
 		
-		bottomPipe->setLocation(glm::vec2(2000, yOffset));
-		topPipe->setLocation(glm::vec2(2000, yOffset + gapSize));
+		world.getComponent<CaffeineTransformComponent>(bottomPipe).position = glm::vec2(2000, yOffset);
+		world.getComponent<CaffeineTransformComponent>(topPipe).position = glm::vec2(2000, yOffset + gapSize);
 	}
 
 	void despawn() {
 		used = false;
 		scored = false;
-		bottomPipe->visible = false;
-		topPipe->visible = false;
-		bottomPipe->setLocation(glm::vec2(2000, -200.0f));
-		topPipe->setLocation(glm::vec2(2000, -200.0f));
+		world.getComponent<CaffeineRenderComponent>(bottomPipe).visible = false;
+		world.getComponent<CaffeineRenderComponent>(topPipe).visible = false;
+		world.getComponent<CaffeineTransformComponent>(bottomPipe).position = glm::vec2(2000, -200.0f);
+		world.getComponent<CaffeineTransformComponent>(topPipe).position = glm::vec2(2000, -200.0f);
 	}
 
 	void move(float deltaTime, float gameVel) {
-		if (used) {
-			bottomPipe->translate(glm::vec2(gameVel * deltaTime, 0.0f));
-			topPipe->translate(glm::vec2(gameVel * deltaTime, 0.0f));
-		}
+		// if (used) {
+		// 	bottomPipe->translate(glm::vec2(gameVel * deltaTime, 0.0f));
+		// 	topPipe->translate(glm::vec2(gameVel * deltaTime, 0.0f));
+		// } //nicht nützlich
 	}
 };
 
-class FlappyBirdGame final : public CaffeineGame {
+class FlappyBirdGame {
 public:
-	CaffeineMeshDrawable *bird;
+	CaffeineEntity bird;
 	PipePair *pipePairs[10];
-	CaffeineMeshDrawable *background;
-	CaffeineMeshDrawable *background2;
+	CaffeineEntity background;
+	CaffeineEntity background2;
 	CaffeineWindow& window;
+	CaffeineWorld& world;
 
-	FlappyBirdGame(CaffeineWindow& window);
+	FlappyBirdGame(CaffeineWindow& window, CaffeineWorld& world);
 
 	~FlappyBirdGame();
 
-	void init() override;
-	void update(float deltaTime) override;
-	void render() override;
+	void init();
+	void update(float deltaTime);
+	void render();
 	void processInput();
 
 	void resetGame();
 	void checkGameOver();
 	void birdDying(float deltaTime);
+	void birdCollisionCallback(CaffeineEntity thisEntity, CaffeineEntity otherEntity);
 
 	void spawnPipe();
 	void despawnPipe();
@@ -119,6 +119,8 @@ public:
 	float pipeSpawnRateMin;
 	float lastPipeSpawnTime;
 
+	const float virtualWidth = 1920.0f;
+	const float virtualHeight = 1080.0f;
 
 	int score;
 	bool gamePaused;
