@@ -64,7 +64,7 @@ void FlappyBirdGame::init() {
 	world.addComponent<CaffeineVelocityComponent>(background2, {gameVel * 0.3f});
 
 	for(int i = 0; i < sizeof(pipePairs) / sizeof(pipePairs[0]); i++) {
-		pipePairs[i] = new PipePair(world);
+		pipePairs[i] = new PipePair(world, gameVel);
 		pipePairs[i]->world.addComponent<CaffeineVelocityComponent>(pipePairs[i]->bottomPipe, {gameVel * 0.3f});
 		pipePairs[i]->world.addComponent<CaffeineVelocityComponent>(pipePairs[i]->topPipe, {gameVel * 0.3f});
 	}
@@ -142,7 +142,7 @@ void FlappyBirdGame::despawnPipe() {
 void FlappyBirdGame::movePipes(float deltaTime) {
 	for (PipePair*& pipePair : pipePairs) {
 		pipePair->move(deltaTime, gameVel.x);
-		if (world.getComponent<CaffeineTransformComponent>(bird).position.x > pipePair->topPipe->transform.position.x) {
+		if (world.getComponent<CaffeineTransformComponent>(bird).position.x > pipePair->world.getComponent<CaffeineTransformComponent>(pipePair->bottomPipe).position.x) {
 			if (pipePair->used && !pipePair->scored) {
 				score ++;
 				pipePair->scored = true;
