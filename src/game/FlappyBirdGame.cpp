@@ -26,57 +26,55 @@ FlappyBirdGame::~FlappyBirdGame() {
 }
 
 void FlappyBirdGame::init() {
-	ResourceManager::setResourceRoot(ResourceManager::getExecutablePath() / "resources");
+	CaffeineResourceManager::setResourceRoot(CaffeineResourceManager::getExecutablePath() / "resources");
 
-	ResourceManager::createDefaultMeshes();
+	CaffeineResourceManager::createDefaultMeshes();
 
-	ResourceManager::loadShader("shaders/default.vert", "shaders/default.frag", nullptr, "default");
+	CaffeineResourceManager::loadShader("shaders/default.vert", "shaders/default.frag", nullptr, "default");
 	
-	ResourceManager::loadTexture("textures/missing_texture.png", "placeholder");
-	ResourceManager::loadTexture("textures/bird.png", "bird");
-	ResourceManager::loadTexture("textures/pipe.png", "pipe");
-	ResourceManager::loadTexture("textures/background.png", "background");
+	CaffeineResourceManager::loadTexture("textures/missing_texture.png", "placeholder");
+	CaffeineResourceManager::loadTexture("textures/bird.png", "bird");
+	CaffeineResourceManager::loadTexture("textures/pipe.png", "pipe");
+	CaffeineResourceManager::loadTexture("textures/background.png", "background");
 
 	bird = world.createEntity();
 	world.addComponent<CaffeineTransformComponent>(bird, {birdSpawn,  0.0f, glm::vec2(100.0f, 70.0f)}); //ort, rotation, scale
 	world.addComponent<CaffeineRenderComponent>(bird, {true, 1});//visible, layer
-	world.addComponent<CaffeineMeshComponent>(bird, {&ResourceManager::getMesh("quad")});//mesh
-	world.addComponent<CaffeineMaterialComponent>(bird, {&ResourceManager::getShader("default"),
-			&ResourceManager::getTexture("bird")});//shader, texture
+	world.addComponent<CaffeineMeshComponent>(bird, CaffeineMeshComponent(&CaffeineResourceManager::getMesh("quad")));//mesh
+	world.addComponent<CaffeineMaterialComponent>(bird, {&CaffeineResourceManager::getShader("default"),
+			&CaffeineResourceManager::getTexture("bird")});//shader, texture
 	world.addComponent<CaffeineColliderComponent>(bird, {ColliderType::DYNAMIC, ColliderShape::QUAD, true,
 		glm::vec2(0.0f), glm::vec2(world.getComponent<CaffeineTransformComponent>(bird).size.x, world.getComponent<CaffeineTransformComponent>(bird).size.y), 
 		[this] (CaffeineEntity thisEntity, CaffeineEntity otherEntity) {birdCollisionCallback(thisEntity, otherEntity);}});//collidertype, colidershape, enabled, offset, size, callback
-	world.addComponent<CaffeineVelocityComponent>(bird, {birdVel});//velocitywert
+	world.addComponent<CaffeineVelocityComponent>(bird, CaffeineVelocityComponent(&birdVel));//velocitywert
 
 	background = world.createEntity();
 	world.addComponent<CaffeineTransformComponent>(background, {glm::vec2(virtualWidth / 2, virtualHeight / 2),  0.0f, glm::vec2(virtualWidth, virtualHeight)}); 
-	world.addComponent<CaffeineRenderComponent>(background, {true, -1000});
-	world.addComponent<CaffeineMeshComponent>(background, {&ResourceManager::getMesh("quad")});
-	world.addComponent<CaffeineMaterialComponent>(background, {&ResourceManager::getShader("default"),
-			&ResourceManager::getTexture("background")});
-	world.addComponent<CaffeineVelocityComponent>(background, {gameVel * 0.3f});
+	world.addComponent<CaffeineRenderComponent>(background, {-1000, true});
+	world.addComponent<CaffeineMeshComponent>(background, CaffeineMeshComponent(&CaffeineResourceManager::getMesh("quad")));
+	world.addComponent<CaffeineMaterialComponent>(background, {&CaffeineResourceManager::getShader("default"),
+			&CaffeineResourceManager::getTexture("background")});
+	world.addComponent<CaffeineVelocityComponent>(background, CaffeineVelocityComponent(&gameVel));
 
 	world.addComponent<CaffeineTransformComponent>(background2, {glm::vec2(virtualWidth / 2 + virtualWidth - 10.0f, virtualHeight / 2),  0.0f, glm::vec2(virtualWidth, virtualHeight)});
-	world.addComponent<CaffeineRenderComponent>(background2, {true, -1000});
-	world.addComponent<CaffeineMeshComponent>(background2, {&ResourceManager::getMesh("quad")});
-	world.addComponent<CaffeineMaterialComponent>(background2, {&ResourceManager::getShader("default"),
-			&ResourceManager::getTexture("background")});
-	world.addComponent<CaffeineVelocityComponent>(background2, {gameVel * 0.3f});
+	world.addComponent<CaffeineRenderComponent>(background2, {-1000, true});
+	world.addComponent<CaffeineMeshComponent>(background2, CaffeineMeshComponent(&CaffeineResourceManager::getMesh("quad")));
+	world.addComponent<CaffeineMaterialComponent>(background2, {&CaffeineResourceManager::getShader("default"),
+			&CaffeineResourceManager::getTexture("background")});
+	world.addComponent<CaffeineVelocityComponent>(background2, CaffeineVelocityComponent(&gameVel));
 
-	for(int i = 0; i < sizeof(pipePairs) / sizeof(pipePairs[0]); i++) {
+	for(int i = 0; i < std::size(pipePairs); i++) {
 		pipePairs[i] = new PipePair(world, gameVel);
-		pipePairs[i]->world.addComponent<CaffeineVelocityComponent>(pipePairs[i]->bottomPipe, {gameVel * 0.3f});
-		pipePairs[i]->world.addComponent<CaffeineVelocityComponent>(pipePairs[i]->topPipe, {gameVel * 0.3f});
+		pipePairs[i]->world.addComponent<CaffeineVelocityComponent>(pipePairs[i]->bottomPipe, CaffeineVelocityComponent(&gameVel));
+		pipePairs[i]->world.addComponent<CaffeineVelocityComponent>(pipePairs[i]->topPipe, CaffeineVelocityComponent(&gameVel));
 	}
 }
 
-void FlappyBirdGame::update(const float deltaTime) {
+void FlappyBirdGame::update(const float  deltaTime) {
 	processInput();
 	if (!gamePaused) {
-		//gameVel.x = gameVelValue - (score * acceleration);
-		CaffeineVelocitySystem::update(world, deltaTime);
+		gameVel.x = gameVelValue - (score * acceleration);
 		CaffeineCollisionSystem::update(world);
-
 		
 		movePipes(deltaTime);
 		spawnPipe();
@@ -86,6 +84,8 @@ void FlappyBirdGame::update(const float deltaTime) {
 		birdVel.y += gravity * deltaTime;
 		//world.getComponent<CaffeineTransformComponent>(bird).position += birdVel * deltaTime;//nicht nützlich
 	}
+	CaffeineVelocitySystem::update(world, deltaTime);
+
 	if (gamePaused && birdIsDying) {birdDying(deltaTime);}
 	checkGameOver();
 }
@@ -176,6 +176,7 @@ void FlappyBirdGame::checkGameOver() {
 	if (world.getComponent<CaffeineTransformComponent>(bird).position.y < 0.0f || world.getComponent<CaffeineTransformComponent>(bird).position.y > virtualHeight) {
 		gamePaused = true;
 		birdIsDying = true;
+		gameVel = glm::vec2(0.0f);
 	}
 }
 

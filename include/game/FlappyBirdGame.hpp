@@ -8,9 +8,9 @@
 //hintergrund aufteilen
 
 struct PipePair {
-	CaffeineEntity bottomPipe;
-	CaffeineEntity topPipe;
 	CaffeineWorld& world;
+	CaffeineEntity bottomPipe = world.createEntity();
+	CaffeineEntity topPipe = world.createEntity();
 	bool used;
 	bool scored;
 
@@ -22,26 +22,30 @@ struct PipePair {
 		used = false;
 		scored = false;
 		
-		world.addComponent<CaffeineTransformComponent>(bottomPipe, {glm::vec2(2000, -200.0f),  0.0f, glm::vec2(-140.0f, 800.0f)});
-		world.addComponent<CaffeineRenderComponent>(bottomPipe, {false, 0});
-		world.addComponent<CaffeineMeshComponent>(bottomPipe, {&ResourceManager::getMesh("quad")});
-		world.addComponent<CaffeineMaterialComponent>(bottomPipe, {&ResourceManager::getShader("default"),
-			&ResourceManager::getTexture("pipe")});
+		world.addComponent<CaffeineTransformComponent>(bottomPipe,
+			{glm::vec2(2000, -200.0f),  0.0f, glm::vec2(-140.0f, 800.0f)});
+		world.addComponent<CaffeineRenderComponent>(bottomPipe,
+			{0, false});
+		world.addComponent<CaffeineMeshComponent>(bottomPipe,
+			CaffeineMeshComponent(&CaffeineResourceManager::getMesh("quad")));
+		world.addComponent<CaffeineMaterialComponent>(bottomPipe,
+			{&CaffeineResourceManager::getShader("default"),
+			&CaffeineResourceManager::getTexture("pipe")});
 		world.addComponent<CaffeineColliderComponent>(bottomPipe, {ColliderType::STATIC, ColliderShape::QUAD, true,
 			glm::vec2(0.0f), glm::vec2(std::abs(world.getComponent<CaffeineTransformComponent>(bottomPipe).size.x), world.getComponent<CaffeineTransformComponent>(bottomPipe).size.y), 
 			nullptr});
-		world.addComponent<CaffeineVelocityComponent>(bottomPipe, {gameVel});
+		world.addComponent<CaffeineVelocityComponent>(bottomPipe, CaffeineVelocityComponent(&gameVel));
 
 
 		world.addComponent<CaffeineTransformComponent>(topPipe, {glm::vec2(2000, -200.0f),  180.0f, glm::vec2(140.0f, 800.0f)});
 		world.addComponent<CaffeineRenderComponent>(topPipe, {false, 0});
-		world.addComponent<CaffeineMeshComponent>(topPipe, {&ResourceManager::getMesh("quad")});
-		world.addComponent<CaffeineMaterialComponent>(topPipe, {&ResourceManager::getShader("default"),
-			&ResourceManager::getTexture("pipe")});
+		world.addComponent<CaffeineMeshComponent>(topPipe, CaffeineMeshComponent(&CaffeineResourceManager::getMesh("quad")));
+		world.addComponent<CaffeineMaterialComponent>(topPipe, {&CaffeineResourceManager::getShader("default"),
+			&CaffeineResourceManager::getTexture("pipe")});
 		world.addComponent<CaffeineColliderComponent>(topPipe, {ColliderType::STATIC, ColliderShape::QUAD, true,
 			glm::vec2(0.0f), glm::vec2(std::abs(world.getComponent<CaffeineTransformComponent>(topPipe).size.x), world.getComponent<CaffeineTransformComponent>(topPipe).size.y), 
 			nullptr});
-		world.addComponent<CaffeineVelocityComponent>(topPipe, {gameVel});
+		world.addComponent<CaffeineVelocityComponent>(topPipe, CaffeineVelocityComponent(&gameVel));
 	}
 
 	void spawn() {

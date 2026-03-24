@@ -28,6 +28,6 @@ int main() {
 		window.update();
 	}
 	world.clear();
-	ResourceManager::clear();
+	CaffeineResourceManager::clear();
 	return 0;
 }
