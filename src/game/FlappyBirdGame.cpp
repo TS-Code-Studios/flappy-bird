@@ -2,12 +2,12 @@
 #include <game/FlappyBirdGame.hpp>
 
 FlappyBirdGame::FlappyBirdGame(CaffeineWindow& window, CaffeineWorld& world) : window(window), world(world) {
-	gameVelValue = -200.0f;
+	gameVelValue = -300.0f;
 	boost = 550.0f;
 	startBoost = 100.0f;
 	gravity = -900.0f;
-	acceleration = 40.0f;
-	pipeSpawnRateMin = 4.0f; //zeitgestuert???? wass wenn level schneller?
+	acceleration = 20.0f;
+	pipeSpawnRate = 2.0f; //zeitgestuert???? wass wenn level schneller?
 
 	birdVel = glm::vec2(0.0f);
 	gameVel = glm::vec2(0.0f);
@@ -45,9 +45,9 @@ void FlappyBirdGame::init() {
 	world.addComponent<CaffeineMeshComponent>(bird, CaffeineMeshComponent(&CaffeineResourceManager::getMesh("quad")));//mesh
 	world.addComponent<CaffeineMaterialComponent>(bird, {&CaffeineResourceManager::getShader("default"),
 			&CaffeineResourceManager::getTexture("bird")});//shader, texture
-	world.addComponent<CaffeineColliderComponent>(bird, {ColliderType::DYNAMIC, ColliderShape::QUAD, true,
-		glm::vec2(0.0f), glm::vec2(world.getComponent<CaffeineTransformComponent>(bird).size.x, world.getComponent<CaffeineTransformComponent>(bird).size.y), 
-		[this] (CaffeineEntity thisEntity, CaffeineEntity otherEntity) {birdCollisionCallback(thisEntity, otherEntity);}});//collidertype, colidershape, enabled, offset, size, callback
+	// world.addComponent<CaffeineColliderComponent>(bird, {ColliderType::DYNAMIC, ColliderShape::QUAD, true,
+	// 	glm::vec2(0.0f), glm::vec2(world.getComponent<CaffeineTransformComponent>(bird).size.x, world.getComponent<CaffeineTransformComponent>(bird).size.y), 
+	// 	[this] (CaffeineEntity thisEntity, CaffeineEntity otherEntity) {birdCollisionCallback(thisEntity, otherEntity);}});//collidertype, colidershape, enabled, offset, size, callback
 	world.addComponent<CaffeineVelocityComponent>(bird, CaffeineVelocityComponent(&birdVel));//velocitywert
 
 	background = world.createEntity();
@@ -84,6 +84,7 @@ void FlappyBirdGame::update(const float  deltaTime) {
 	CaffeineVelocitySystem::update(world, deltaTime);
 	if (!gamePaused) {
 		gameVel.x = gameVelValue - (score * acceleration);
+		gameVelFactor = gameVel.x / gameVelValue;
 		CaffeineCollisionSystem::update(world);
 		
 		movePipes(deltaTime);
@@ -92,7 +93,7 @@ void FlappyBirdGame::update(const float  deltaTime) {
 		moveBackground();
 		
 		rotateBird();
-		birdVel.y += gravity * deltaTime;
+		birdVel.y += gravity * deltaTime * gameVelFactor;
 		//world.getComponent<CaffeineTransformComponent>(bird).position += birdVel * deltaTime;//nicht nützlich
 	}
 	
@@ -131,7 +132,7 @@ void FlappyBirdGame::processInput() {
 }
 
 void FlappyBirdGame::spawnPipe() {
-	if (static_cast<float>(glfwGetTime()) - lastPipeSpawnTime > pipeSpawnRateMin) {
+	if (static_cast<float>(glfwGetTime()) - lastPipeSpawnTime > pipeSpawnRate / gameVelFactor) {
 		for (PipePair*& pipePair : pipePairs) {
 			if (!pipePair->used) {
 				pipePair->spawn();

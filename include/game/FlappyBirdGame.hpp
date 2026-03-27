@@ -2,11 +2,7 @@
 #define FLAPPYBIRDGAME_HPP
 
 #include <caffeine-gl/base.hpp>
-//den rest an schnellerres siel anpassen, pipe und springen
-//pipes abnhägnig von geschwindigkeit mehr spawnen
-//wie soll spiel schneller werden? eine variable die die pipemovement beschleunigt und bird beschleuningt und so
 //hintergrund aufteilen
-//vogel schneller fallen lassen wenn spiel schneller
 
 struct PipePair {
 	CaffeineWorld& world;
@@ -51,8 +47,8 @@ struct PipePair {
 		world.getComponent<CaffeineRenderComponent>(topPipe).visible = true;
 		
 		
-		gapSize = static_cast<float>(rand() % 400 + 1000);
-		yOffset = static_cast<float>(rand() % static_cast<int>(1680 - gapSize))-300;
+		gapSize = static_cast<float>(rand() % 350 + 1050);
+		yOffset = static_cast<float>(rand() % static_cast<int>(1680 - gapSize)) - 300;
 		
 		world.getComponent<CaffeineTransformComponent>(bottomPipe).position = glm::vec2(2000, yOffset);
 		world.getComponent<CaffeineTransformComponent>(topPipe).position = glm::vec2(2000, yOffset + gapSize);
@@ -118,8 +114,9 @@ public:
 	float startBoost;
 	float gravity;
 	float acceleration;
+	float gameVelFactor;
 	
-	float pipeSpawnRateMin;
+	float pipeSpawnRate;
 	float lastPipeSpawnTime;
 
 	const float virtualWidth = 1920.0f;
