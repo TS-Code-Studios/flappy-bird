@@ -8,8 +8,8 @@ FlappyBirdGame::FlappyBirdGame(CaffeineWindow& window, CaffeineWorld& world) : w
 	acceleration = 40.0f;
 	pipeSpawnRateMin = 4.0f; //zeitgestuert???? wass wenn level schneller?
 
-	birdVel = glm::vec2(0.0f, startBoost);
-	gameVel = glm::vec2(gameVelValue, 0.0f);
+	birdVel = glm::vec2(0.0f);
+	gameVel = glm::vec2(0.0f);
 
 	birdSpawn = glm::vec2(250.0f, 540.0f);
 

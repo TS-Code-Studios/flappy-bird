@@ -22,14 +22,10 @@ struct PipePair {
 		used = false;
 		scored = false;
 		
-		world.addComponent<CaffeineTransformComponent>(bottomPipe,
-			{glm::vec2(2000, -200.0f),  0.0f, glm::vec2(-140.0f, 800.0f)});
-		world.addComponent<CaffeineRenderComponent>(bottomPipe,
-			{0, false});
-		world.addComponent<CaffeineMeshComponent>(bottomPipe,
-			CaffeineMeshComponent(&CaffeineResourceManager::getMesh("quad")));
-		world.addComponent<CaffeineMaterialComponent>(bottomPipe,
-			{&CaffeineResourceManager::getShader("default"),
+		world.addComponent<CaffeineTransformComponent>(bottomPipe, {glm::vec2(2000, -200.0f),  0.0f, glm::vec2(-140.0f, 800.0f)});
+		world.addComponent<CaffeineRenderComponent>(bottomPipe, {0, false});
+		world.addComponent<CaffeineMeshComponent>(bottomPipe, CaffeineMeshComponent(&CaffeineResourceManager::getMesh("quad")));
+		world.addComponent<CaffeineMaterialComponent>(bottomPipe, {&CaffeineResourceManager::getShader("default"),
 			&CaffeineResourceManager::getTexture("pipe")});
 		world.addComponent<CaffeineColliderComponent>(bottomPipe, {ColliderType::STATIC, ColliderShape::QUAD, true,
 			glm::vec2(0.0f), glm::vec2(std::abs(world.getComponent<CaffeineTransformComponent>(bottomPipe).size.x), world.getComponent<CaffeineTransformComponent>(bottomPipe).size.y), 
