@@ -6,6 +6,7 @@
 //pipes abnhägnig von geschwindigkeit mehr spawnen
 //wie soll spiel schneller werden? eine variable die die pipemovement beschleunigt und bird beschleuningt und so
 //hintergrund aufteilen
+//vogel schneller fallen lassen wenn spiel schneller
 
 struct PipePair {
 	CaffeineWorld& world;
@@ -82,6 +83,7 @@ public:
 	CaffeineEntity background2;
 	CaffeineWindow& window;
 	CaffeineWorld& world;
+	CaffeineEntity scoreText;
 
 	FlappyBirdGame(CaffeineWindow& window, CaffeineWorld& world);
 
@@ -95,12 +97,13 @@ public:
 	void resetGame();
 	void checkGameOver();
 	void birdDying(float deltaTime);
-	void birdCollisionCallback(CaffeineEntity thisEntity, CaffeineEntity otherEntity);
+    void birdCollisionCallback(CaffeineEntity thisEntity, CaffeineEntity otherEntity);
+    void gameOver();
 
 	void spawnPipe();
 	void despawnPipe();
 	void movePipes(float deltaTime);
-	void moveBackground(float deltaTime, float gameVel);
+	void moveBackground();
 
 	void rotateBird();
 
