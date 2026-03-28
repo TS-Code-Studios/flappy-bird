@@ -20,7 +20,7 @@ struct PipePair {
 		scored = false;
 		
 		world.addComponent<CaffeineTransformComponent>(bottomPipe, {glm::vec2(2000, -200.0f),  0.0f, glm::vec2(-140.0f, 800.0f)});
-		world.addComponent<CaffeineRenderComponent>(bottomPipe, {0, false});
+		world.addComponent<CaffeineRenderComponent>(bottomPipe, {false, 0});
 		world.addComponent<CaffeineMeshComponent>(bottomPipe, CaffeineMeshComponent(&CaffeineResourceManager::getMesh("quad")));
 		world.addComponent<CaffeineMaterialComponent>(bottomPipe, {&CaffeineResourceManager::getShader("default"),
 			&CaffeineResourceManager::getTexture("pipe")});
@@ -31,7 +31,7 @@ struct PipePair {
 
 
 		world.addComponent<CaffeineTransformComponent>(topPipe, {glm::vec2(2000, -200.0f),  180.0f, glm::vec2(140.0f, 800.0f)});
-		world.addComponent<CaffeineRenderComponent>(topPipe, {false, 0});
+		world.addComponent<CaffeineRenderComponent>(topPipe, {0, false});
 		world.addComponent<CaffeineMeshComponent>(topPipe, CaffeineMeshComponent(&CaffeineResourceManager::getMesh("quad")));
 		world.addComponent<CaffeineMaterialComponent>(topPipe, {&CaffeineResourceManager::getShader("default"),
 			&CaffeineResourceManager::getTexture("pipe")});
@@ -75,8 +75,7 @@ class FlappyBirdGame {
 public:
 	CaffeineEntity bird;
 	PipePair *pipePairs[10];
-	CaffeineEntity background;
-	CaffeineEntity background2;
+	CaffeineEntity backgroundColor, backgroundClouds, backgroundClouds2, backgroundBuildings, backgroundBuildings2, backgroundBushes, backgroundBushes2;
 	CaffeineWindow& window;
 	CaffeineWorld& world;
 	CaffeineEntity scoreText;
@@ -125,6 +124,8 @@ public:
 	int score;
 	bool gamePaused;
 	bool birdIsDying;
+
+	std::vector<CaffeineEntity> backgroundEntities;
 };
 
 #endif //FLAPPYBIRDGAME_HPP
