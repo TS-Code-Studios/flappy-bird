@@ -33,6 +33,7 @@ void FlappyBirdGame::init() {
 	CaffeineResourceManager::createDefaultMeshes();
 
 	CaffeineResourceManager::loadShader("shaders/default.vert", "shaders/default.frag", nullptr, "default");
+	CaffeineResourceManager::loadShader("shaders/default_text.vert", "shaders/default_text.frag", nullptr, "default_text");
 	
 	CaffeineResourceManager::loadTexture("textures/missing_texture.png", "placeholder");
 	CaffeineResourceManager::loadTexture("textures/bird.png", "bird");
@@ -116,10 +117,10 @@ void FlappyBirdGame::init() {
 	backgroundEntities.push_back(backgroundBushes2);
 
 	scoreText = world.createEntity();
-	world.addComponent<CaffeineTransformComponent>(scoreText, {glm::vec2(virtualWidth/2, virtualHeight/2),  0.0f, glm::vec2(200.0f)});
+	world.addComponent<CaffeineTransformComponent>(scoreText, {glm::vec2(virtualWidth/2, virtualHeight/2),  0.0f, glm::vec2(1.0f)});
 	world.addComponent<CaffeineRenderComponent>(scoreText, {1000, true});
 	world.addComponent<CaffeineMeshComponent>(scoreText, CaffeineMeshComponent(&CaffeineResourceManager::getMesh("quad")));
-	world.addComponent<CaffeineTextComponent>(scoreText, {"test", &CaffeineResourceManager::getFont("arial"), &CaffeineResourceManager::getShader("default"), glm::vec3(10.0f)});
+	world.addComponent<CaffeineTextComponent>(scoreText, {"test", &CaffeineResourceManager::getFont("arial"), &CaffeineResourceManager::getShader("default_text"), glm::vec4(0.0f, 0.0f, 0.0f, 1.0f)});
 
 	for(int i = 0; i < std::size(pipePairs); i++) {
 		pipePairs[i] = new PipePair(world, gameVel);
@@ -131,7 +132,6 @@ void FlappyBirdGame::init() {
 void FlappyBirdGame::update(const float  deltaTime) {
 	processInput();
 	CaffeineVelocitySystem::update(world, deltaTime);
-	//CaffeineTextRenderingSystem::update(world);
 	if (!gamePaused) {
 		gameVel.x = gameVelValue - (score * acceleration);
 		gameVelFactor = gameVel.x / gameVelValue;
@@ -281,4 +281,5 @@ void FlappyBirdGame::rotateBird() {
 
 void FlappyBirdGame::render() {
 	CaffeineRenderingSystem::update(world);
+	CaffeineTextRenderingSystem::update(world);
 }
