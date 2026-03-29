@@ -20,7 +20,7 @@ struct PipePair {
 		scored = false;
 		
 		world.addComponent<CaffeineTransformComponent>(bottomPipe, {glm::vec2(2000, -200.0f),  0.0f, glm::vec2(-140.0f, 800.0f)});
-		world.addComponent<CaffeineRenderComponent>(bottomPipe, {false, 0});
+		world.addComponent<CaffeineRenderComponent>(bottomPipe, {0, false});
 		world.addComponent<CaffeineMeshComponent>(bottomPipe, CaffeineMeshComponent(&CaffeineResourceManager::getMesh("quad")));
 		world.addComponent<CaffeineMaterialComponent>(bottomPipe, {&CaffeineResourceManager::getShader("default"),
 			&CaffeineResourceManager::getTexture("pipe")});
@@ -86,7 +86,7 @@ public:
 
 	void init();
 	void update(float deltaTime);
-	void render();
+	void render(float deltaTime);
 	void processInput();
 
 	void resetGame();
@@ -105,6 +105,9 @@ public:
 	glm::vec2 birdSpawn;
 
 	glm::vec2 gameVel;
+	glm::vec2 gameVelClouds;
+	glm::vec2 gameVelBuildings;
+	glm::vec2 gameVelBushes;
 	glm::vec2 birdVel;
 
 	float gameVelValue;

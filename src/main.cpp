@@ -24,7 +24,6 @@ int main() {
 		lastFrame = currentFrame;
 
 		flappyBird.update(deltaTime);
-		flappyBird.render();
 		window.update();
 	}
 	world.clear();
