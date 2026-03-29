@@ -79,6 +79,7 @@ public:
 	CaffeineWindow& window;
 	CaffeineWorld& world;
 	CaffeineEntity scoreText;
+	CaffeineEntity gameOverBackground, gameOverText1, gameOverText2;
 
 	FlappyBirdGame(CaffeineWindow& window, CaffeineWorld& world);
 
