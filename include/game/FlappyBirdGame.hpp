@@ -2,7 +2,6 @@
 #define FLAPPYBIRDGAME_HPP
 
 #include <caffeine-gl/base.hpp>
-//high score
 
 struct PipePair {
 	CaffeineWorld& world;
