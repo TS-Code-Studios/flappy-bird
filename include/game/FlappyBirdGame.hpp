@@ -2,7 +2,7 @@
 #define FLAPPYBIRDGAME_HPP
 
 #include <caffeine-gl/base.hpp>
-//hintergrund aufteilen
+//high score
 
 struct PipePair {
 	CaffeineWorld& world;
@@ -79,7 +79,7 @@ public:
 	CaffeineWindow& window;
 	CaffeineWorld& world;
 	CaffeineEntity scoreText;
-	CaffeineEntity gameOverBackground, gameOverText1, gameOverText2;
+	CaffeineEntity gameOverBackground, gameOverText1, gameOverText2, gameOverText3;
 
 	FlappyBirdGame(CaffeineWindow& window, CaffeineWorld& world);
 
@@ -126,6 +126,7 @@ public:
 	const float virtualHeight = 1080.0f;
 
 	int score;
+	int highScore;
 	bool gamePaused;
 	bool birdIsDying;
 
