@@ -23,6 +23,9 @@ FlappyBirdGame::FlappyBirdGame(CaffeineWindow& window, CaffeineWorld& world) : w
 	lastPipeSpawnTime = 0.0f;
 	gamePaused = true;
 	birdIsDying = false;
+
+	highScore = 0;
+	score = 0;
 }	
 
 
@@ -199,9 +202,10 @@ void FlappyBirdGame::update(const float  deltaTime) {
 		
 		rotateBird();
 		birdVel.y += gravity * deltaTime * gameVelFactor;
+		checkGameOver();
 	}
 	if (gamePaused && birdIsDying) {birdDying(deltaTime);}
-	checkGameOver();
+	
 	render(deltaTime);
 }
 
@@ -313,23 +317,22 @@ void FlappyBirdGame::birdCollisionCallback(CaffeineEntity thisEntity, CaffeineEn
 void FlappyBirdGame::gameOver() {
     gamePaused = true;
     birdIsDying = true;
-	(score > 100) ? score = 0 : score = score;
 	highScore = std::max(score, highScore);
 
-	int allTimeHighScore;
+	int allTimeHighScore = 0;
 	std::ifstream in("save.txt");
 	if (in.is_open()) {
 		in >> allTimeHighScore;
 		in.close();
-	} else {
-		allTimeHighScore = 0;
 	}
+
+	std::cout << "Score: " << score << " -- High Score: " << highScore << " -- All Time High Score: " << allTimeHighScore << std::endl;	
 	
 	if (highScore > allTimeHighScore) {
 		std::ofstream out("save.txt");
 		out << highScore;
 		out.close();
-		world.getComponent<CaffeineTextComponent>(gameOverText3).text = "New All Time High Score!";
+		world.getComponent<CaffeineTextComponent>(gameOverText3).text = "New All Time High Score " + std::to_string(highScore) + "!";
 	}
 	else {
 		world.getComponent<CaffeineTextComponent>(gameOverText3).text = "All Time High Score: " + std::to_string(allTimeHighScore);
@@ -356,6 +359,7 @@ void FlappyBirdGame::birdDying(float deltaTime) {
 		birdIsDying = false;
 	}
 	birdVel.y += gravity * deltaTime;
+
 }
 
 void FlappyBirdGame::rotateBird() {
