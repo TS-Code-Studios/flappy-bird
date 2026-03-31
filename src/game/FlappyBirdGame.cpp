@@ -3,9 +3,9 @@
 
 FlappyBirdGame::FlappyBirdGame(CaffeineWindow& window, CaffeineWorld& world) : window(window), world(world) {
 	gameVelValue = -300.0f;
-	boost = 550.0f;
+	boost = 570.0f;
 	startBoost = 100.0f;
-	gravity = -900.0f;
+	gravity = -1000.0f;
 	acceleration = 15.0f;
 	pipeSpawnRate = 1.8f;
 
@@ -193,9 +193,7 @@ void FlappyBirdGame::update(const float  deltaTime) {
 		
 		rotateBird();
 		birdVel.y += gravity * deltaTime * gameVelFactor;
-		//world.getComponent<CaffeineTransformComponent>(bird).position += birdVel * deltaTime;//nicht nützlich
 	}
-
 	if (gamePaused && birdIsDying) {birdDying(deltaTime);}
 	checkGameOver();
 	render(deltaTime);
@@ -275,9 +273,9 @@ void FlappyBirdGame::resetGame() {
 	world.getComponent<CaffeineRenderComponent>(gameOverText1).visible = false;
 	world.getComponent<CaffeineRenderComponent>(gameOverText2).visible = false;
 	world.getComponent<CaffeineRenderComponent>(gameOverText3).visible = false;
-	world.getComponent<CaffeineTransformComponent>(bird).position = birdSpawn;
-	birdVel = glm::vec2(0.0f, startBoost);
 
+	world.getComponent<CaffeineTransformComponent>(bird).position = birdSpawn;
+	
 	world.getComponent<CaffeineTransformComponent>(backgroundColor).position = glm::vec2(virtualWidth / 2, virtualHeight / 2);
 	world.getComponent<CaffeineTransformComponent>(backgroundClouds2).position = glm::vec2(virtualWidth / 2 + virtualWidth - 10.0f, virtualHeight / 2);
 	world.getComponent<CaffeineTransformComponent>(backgroundClouds).position = glm::vec2(virtualWidth / 2, virtualHeight / 2);
@@ -285,6 +283,8 @@ void FlappyBirdGame::resetGame() {
 	world.getComponent<CaffeineTransformComponent>(backgroundBuildings).position = glm::vec2(virtualWidth / 2, virtualHeight / 2);
 	world.getComponent<CaffeineTransformComponent>(backgroundBushes2).position = glm::vec2(virtualWidth / 2 + virtualWidth - 10.0f, virtualHeight / 2);
 	world.getComponent<CaffeineTransformComponent>(backgroundBushes).position = glm::vec2(virtualWidth / 2, virtualHeight / 2);
+	
+	birdVel = glm::vec2(0.0f, startBoost);
 	
 	for (PipePair*& pipePair : pipePairs) {
 		pipePair->despawn();
@@ -327,7 +327,6 @@ void FlappyBirdGame::birdDying(float deltaTime) {
 		birdIsDying = false;
 	}
 	birdVel.y += gravity * deltaTime;
-	//bird->translate(birdVel * deltaTime); nicht nützlich
 }
 
 void FlappyBirdGame::rotateBird() {

@@ -61,13 +61,6 @@ struct PipePair {
 		world.getComponent<CaffeineTransformComponent>(bottomPipe).position = glm::vec2(2000, -200.0f);
 		world.getComponent<CaffeineTransformComponent>(topPipe).position = glm::vec2(2000, -200.0f);
 	}
-
-	void move(float deltaTime, float gameVel) {
-		// if (used) {
-		// 	bottomPipe->translate(glm::vec2(gameVel * deltaTime, 0.0f));
-		// 	topPipe->translate(glm::vec2(gameVel * deltaTime, 0.0f));
-		// } //nicht nützlich
-	}
 };
 
 class FlappyBirdGame {
