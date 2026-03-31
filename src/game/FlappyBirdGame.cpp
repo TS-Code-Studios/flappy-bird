@@ -1,5 +1,8 @@
 #include <game/FlappyBirdGame.hpp>
 #include <game/FlappyBirdGame.hpp>
+#include <iostream>
+#include <fstream>
+
 
 FlappyBirdGame::FlappyBirdGame(CaffeineWindow& window, CaffeineWorld& world) : window(window), world(world) {
 	gameVelValue = -300.0f;
@@ -57,10 +60,7 @@ void FlappyBirdGame::init() {
 	CaffeineResourceManager::getTexture("backgroundBushes").setTextureParameter(GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	CaffeineResourceManager::getTexture("backgroundBushes").setTextureParameter(GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-
-
 	CaffeineResourceManager::loadFont("fonts/retro.ttf", "retro");
-
 
 
 	bird = world.createEntity();
@@ -136,7 +136,7 @@ void FlappyBirdGame::init() {
 	backgroundEntities.push_back(backgroundBushes2);
 
 	scoreText = world.createEntity();
-	world.addComponent<CaffeineTransformComponent>(scoreText, {glm::vec2(1500.0f, virtualHeight - 65.0f),  0.0f, glm::vec2(0.9f)});
+	world.addComponent<CaffeineTransformComponent>(scoreText, {glm::vec2(30.0f, virtualHeight - 60.0f),  0.0f, glm::vec2(0.9f)});
 	world.addComponent<CaffeineRenderComponent>(scoreText, {1001, true});
 	world.addComponent<CaffeineMeshComponent>(scoreText, CaffeineMeshComponent(&CaffeineResourceManager::getMesh("quad")));
 	world.addComponent<CaffeineTextComponent>(scoreText, {"score:0", &CaffeineResourceManager::getFont("retro"), &CaffeineResourceManager::getShader("default_text"), glm::vec4(0.0f, 0.0f, 0.0f, 1.0f)});
@@ -155,16 +155,22 @@ void FlappyBirdGame::init() {
 	world.addComponent<CaffeineTextComponent>(gameOverText1, {"GAME OVER!", &CaffeineResourceManager::getFont("retro"), &CaffeineResourceManager::getShader("default_text"), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)});
 	
 	gameOverText2 = world.createEntity();
-	world.addComponent<CaffeineTransformComponent>(gameOverText2, {glm::vec2(400.0f, 495.0f),  0.0f, glm::vec2(0.8f)});
+	world.addComponent<CaffeineTransformComponent>(gameOverText2, {glm::vec2(350.0f, 495.0f),  0.0f, glm::vec2(0.8f)});
 	world.addComponent<CaffeineRenderComponent>(gameOverText2, {1002, false});
 	world.addComponent<CaffeineMeshComponent>(gameOverText2, CaffeineMeshComponent(&CaffeineResourceManager::getMesh("quad")));
 	world.addComponent<CaffeineTextComponent>(gameOverText2, {"Final Score: 0 -- High Score: 0", &CaffeineResourceManager::getFont("retro"), &CaffeineResourceManager::getShader("default_text"), glm::vec4(4.0f, 4.0f, 4.0f, 1.0f)});
 
 	gameOverText3 = world.createEntity();
-	world.addComponent<CaffeineTransformComponent>(gameOverText3, {glm::vec2(600.0f, 230.0f),  0.0f, glm::vec2(0.7f)});
+	world.addComponent<CaffeineTransformComponent>(gameOverText3, {glm::vec2(500.0f, 430.0f),  0.0f, glm::vec2(0.8f)});
 	world.addComponent<CaffeineRenderComponent>(gameOverText3, {1002, false});
 	world.addComponent<CaffeineMeshComponent>(gameOverText3, CaffeineMeshComponent(&CaffeineResourceManager::getMesh("quad")));
-	world.addComponent<CaffeineTextComponent>(gameOverText3, {"Press SPACE to restart", &CaffeineResourceManager::getFont("retro"), &CaffeineResourceManager::getShader("default_text"), glm::vec4(0.0f, 0.0f, 0.0f, 1.0f)});
+	world.addComponent<CaffeineTextComponent>(gameOverText3, {"All Time High Score: -", &CaffeineResourceManager::getFont("retro"), &CaffeineResourceManager::getShader("default_text"), glm::vec4(4.0f, 4.0f, 4.0f, 1.0f)});	
+
+	gameOverText4 = world.createEntity();
+	world.addComponent<CaffeineTransformComponent>(gameOverText4, {glm::vec2(600.0f, 230.0f),  0.0f, glm::vec2(0.7f)});
+	world.addComponent<CaffeineRenderComponent>(gameOverText4, {1002, false});
+	world.addComponent<CaffeineMeshComponent>(gameOverText4, CaffeineMeshComponent(&CaffeineResourceManager::getMesh("quad")));
+	world.addComponent<CaffeineTextComponent>(gameOverText4, {"Press SPACE to restart", &CaffeineResourceManager::getFont("retro"), &CaffeineResourceManager::getShader("default_text"), glm::vec4(0.0f, 0.0f, 0.0f, 1.0f)});
 	
 
 	for(int i = 0; i < std::size(pipePairs); i++) {
@@ -272,6 +278,7 @@ void FlappyBirdGame::resetGame() {
 	world.getComponent<CaffeineRenderComponent>(gameOverText1).visible = false;
 	world.getComponent<CaffeineRenderComponent>(gameOverText2).visible = false;
 	world.getComponent<CaffeineRenderComponent>(gameOverText3).visible = false;
+	world.getComponent<CaffeineRenderComponent>(gameOverText4).visible = false;
 
 	world.getComponent<CaffeineTransformComponent>(bird).position = birdSpawn;
 	
@@ -306,13 +313,36 @@ void FlappyBirdGame::birdCollisionCallback(CaffeineEntity thisEntity, CaffeineEn
 void FlappyBirdGame::gameOver() {
     gamePaused = true;
     birdIsDying = true;
+	(score > 100) ? score = 0 : score = score;
 	highScore = std::max(score, highScore);
+
+	int allTimeHighScore;
+	std::ifstream in("save.txt");
+	if (in.is_open()) {
+		in >> allTimeHighScore;
+		in.close();
+	} else {
+		allTimeHighScore = 0;
+	}
+	
+	if (highScore > allTimeHighScore) {
+		std::ofstream out("save.txt");
+		out << highScore;
+		out.close();
+		world.getComponent<CaffeineTextComponent>(gameOverText3).text = "New All Time High Score!";
+	}
+	else {
+		world.getComponent<CaffeineTextComponent>(gameOverText3).text = "All Time High Score: " + std::to_string(allTimeHighScore);
+	}
+	
     gameVel = glm::vec2(0.0f);
 	world.getComponent<CaffeineRenderComponent>(gameOverBackground).visible = true;
 	world.getComponent<CaffeineRenderComponent>(gameOverText1).visible = true;
 	world.getComponent<CaffeineRenderComponent>(gameOverText2).visible = true;
 	world.getComponent<CaffeineRenderComponent>(gameOverText3).visible = true;
+	world.getComponent<CaffeineRenderComponent>(gameOverText4).visible = true;
 	world.getComponent<CaffeineTextComponent>(gameOverText2).text = "Final Score: " + std::to_string(score) + " -- High Score: " + std::to_string(highScore);
+	
 }
 
 void FlappyBirdGame::birdDying(float deltaTime) {
