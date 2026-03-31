@@ -46,8 +46,8 @@ struct PipePair {
 		world.getComponent<CaffeineRenderComponent>(topPipe).visible = true;
 		
 		
-		gapSize = static_cast<float>(rand() % 350 + 1050);
-		yOffset = static_cast<float>(rand() % static_cast<int>(1680 - gapSize)) - 300;
+		gapSize = static_cast<float>(rand() % 150 + 1000);
+		yOffset = static_cast<float>(rand() % static_cast<int>(1700 - gapSize)) - 310;
 		
 		world.getComponent<CaffeineTransformComponent>(bottomPipe).position = glm::vec2(2000, yOffset);
 		world.getComponent<CaffeineTransformComponent>(topPipe).position = glm::vec2(2000, yOffset + gapSize);
@@ -65,64 +65,66 @@ struct PipePair {
 
 class FlappyBirdGame {
 public:
-	CaffeineEntity bird;
-	PipePair *pipePairs[10];
-	CaffeineEntity backgroundColor, backgroundClouds, backgroundClouds2, backgroundBuildings, backgroundBuildings2, backgroundBushes, backgroundBushes2;
+	const float virtualWidth = 1920.0f;
+	const float virtualHeight = 1080.0f;
+
+	glm::vec2 birdSpawn;
+
+	glm::vec2 birdVelocity;
+	glm::vec2 cloudVelocity;
+	glm::vec2 buildingVelocity;
+	glm::vec2 bushVelocity;
+	glm::vec2 pipeVelocity;
+
+	const float gameVelocityConst = -200.0f;
+	const float acceleration = 10.0f;
+	float currentAccelerationFactor;
+
+	const float pipeSpawnRate = 1.8f;
+	float lastPipeSpawnTime;
+
+	const float boost = 600.0f;
+	const float startBoost = 100.0f;
+	const float gravity = -2300.0f;
+
+	int score;
+	int highScore;
+
+	bool gamePaused;
+	bool birdIsDying;
+	
 	CaffeineWindow& window;
 	CaffeineWorld& world;
+	CaffeineEntity bird;
+	CaffeineEntity backgroundColor, backgroundClouds, backgroundClouds2, backgroundBuildings, backgroundBuildings2, backgroundBushes, backgroundBushes2;
+	PipePair *pipePairs[10];
 	CaffeineEntity scoreText;
 	CaffeineEntity gameOverBackground, gameOverText1, gameOverText2, gameOverText3, gameOverText4;
 
-	FlappyBirdGame(CaffeineWindow& window, CaffeineWorld& world);
+	std::vector<CaffeineEntity> backgroundEntities;
 
+	FlappyBirdGame(CaffeineWindow& window, CaffeineWorld& world);
 	~FlappyBirdGame();
 
 	void init();
-	void update(float deltaTime);
-	void render(float deltaTime);
+    void update(float deltaTime);
+    void updateBackgroundVelocities();
+    void render(float deltaTime);
+
 	void processInput();
 
-	void resetGame();
 	void checkGameOver();
-	void birdDying(float deltaTime);
-    void birdCollisionCallback(CaffeineEntity thisEntity, CaffeineEntity otherEntity);
+	void birdCollisionCallback(CaffeineEntity thisEntity, CaffeineEntity otherEntity);
     void gameOver();
+	void birdDyingAnimation(float deltaTime);
+	void resetGame();
 
 	void spawnPipe();
 	void despawnPipe();
 	void updateScore();
-	void moveBackground();
+	void respawnBackground();
 
 	void rotateBird();
-
-	glm::vec2 birdSpawn;
-
-	glm::vec2 gameVel;
-	glm::vec2 gameVelClouds;
-	glm::vec2 gameVelBuildings;
-	glm::vec2 gameVelBushes;
-	glm::vec2 birdVel;
-
-	float gameVelValue;
-
-	float boost;
-	float startBoost;
-	float gravity;
-	float acceleration;
-	float gameVelFactor;
-	
-	float pipeSpawnRate;
-	float lastPipeSpawnTime;
-
-	const float virtualWidth = 1920.0f;
-	const float virtualHeight = 1080.0f;
-
-	int score;
-	int highScore;
-	bool gamePaused;
-	bool birdIsDying;
-
-	std::vector<CaffeineEntity> backgroundEntities;
 };
 
 #endif //FLAPPYBIRDGAME_HPP
