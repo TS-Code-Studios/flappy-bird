@@ -90,7 +90,7 @@ public:
 
 	void spawnPipe();
 	void despawnPipe();
-	void movePipes(float deltaTime);
+	void updateScore();
 	void moveBackground();
 
 	void rotateBird();

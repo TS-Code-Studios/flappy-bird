@@ -186,7 +186,7 @@ void FlappyBirdGame::update(const float  deltaTime) {
 		CaffeineCollisionSystem::update(world);
 		
 		world.getComponent<CaffeineTextComponent>(scoreText).text = "score:" + std::to_string(score);
-		movePipes(deltaTime);
+		updateScore();
 		spawnPipe();
 		despawnPipe();
 		moveBackground();
@@ -246,9 +246,8 @@ void FlappyBirdGame::despawnPipe() {
 	}
 }
 
-void FlappyBirdGame::movePipes(float deltaTime) {
+void FlappyBirdGame::updateScore() {
 	for (PipePair*& pipePair : pipePairs) {
-		pipePair->move(deltaTime, gameVel.x);
 		if (world.getComponent<CaffeineTransformComponent>(bird).position.x > pipePair->world.getComponent<CaffeineTransformComponent>(pipePair->bottomPipe).position.x) {
 			if (pipePair->used && !pipePair->scored) {
 				score ++;
