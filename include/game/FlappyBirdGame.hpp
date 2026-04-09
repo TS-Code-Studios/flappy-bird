@@ -12,9 +12,9 @@ struct PipePair {
 
 	float gapSize;
 	float yOffset;
-	glm::vec2 &gameVel;
+	glm::vec2 &gameVelocity;
 
-	PipePair(CaffeineWorld& world, glm::vec2 &gameVel) : world(world), gameVel(gameVel) {
+	PipePair(CaffeineWorld& world, glm::vec2 &gameVelocity) : world(world), gameVelocity(gameVelocity) {
 		used = false;
 		scored = false;
 		
@@ -26,7 +26,7 @@ struct PipePair {
 		world.addComponent<CaffeineColliderComponent>(bottomPipe, {ColliderType::STATIC, ColliderShape::QUAD, true,
 			glm::vec2(0.0f), glm::vec2(std::abs(world.getComponent<CaffeineTransformComponent>(bottomPipe).size.x), world.getComponent<CaffeineTransformComponent>(bottomPipe).size.y), 
 			nullptr});
-		world.addComponent<CaffeineVelocityComponent>(bottomPipe, CaffeineVelocityComponent(&gameVel));
+		world.addComponent<CaffeineVelocityComponent>(bottomPipe, CaffeineVelocityComponent(&gameVelocity));
 
 
 		world.addComponent<CaffeineTransformComponent>(topPipe, {glm::vec2(2000, -200.0f),  180.0f, glm::vec2(140.0f, 800.0f)});
@@ -37,7 +37,7 @@ struct PipePair {
 		world.addComponent<CaffeineColliderComponent>(topPipe, {ColliderType::STATIC, ColliderShape::QUAD, true,
 			glm::vec2(0.0f), glm::vec2(std::abs(world.getComponent<CaffeineTransformComponent>(topPipe).size.x), world.getComponent<CaffeineTransformComponent>(topPipe).size.y), 
 			nullptr});
-		world.addComponent<CaffeineVelocityComponent>(topPipe, CaffeineVelocityComponent(&gameVel));
+		world.addComponent<CaffeineVelocityComponent>(topPipe, CaffeineVelocityComponent(&gameVelocity));
 	}
 
 	void spawn() {
