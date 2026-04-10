@@ -1,4 +1,6 @@
 #include <game/FlappyBirdGame.hpp>
+#include <systems/PlayerMovementSystem.hpp>
+#include <components/PlayerMovementComponent.hpp>
 #include <iostream>
 #include <fstream>
 
@@ -67,6 +69,7 @@ void FlappyBirdGame::init() {
 		glm::vec2(0.0f), glm::vec2(world.getComponent<CaffeineTransformComponent>(bird).size.x, world.getComponent<CaffeineTransformComponent>(bird).size.y), 
 		[this] (CaffeineEntity thisEntity, CaffeineEntity otherEntity) {birdCollisionCallback(thisEntity, otherEntity);}});
 	world.addComponent<CaffeineVelocityComponent>(bird, CaffeineVelocityComponent(&birdVelocity));
+	world.addComponent<PlayerMovementComponent>(bird, PlayerMovementComponent(gravity, boost, GLFW_KEY_UP));
 
 	backgroundColor = world.createEntity();
 	world.addComponent<CaffeineTransformComponent>(backgroundColor, {glm::vec2(virtualWidth / 2, virtualHeight / 2),  0.0f, glm::vec2(virtualWidth, virtualHeight)}); 
@@ -181,6 +184,7 @@ void FlappyBirdGame::update(const float  deltaTime) {
 		pipeVelocity.x = gameVelocityConst - (score * acceleration);
 		currentAccelerationFactor = pipeVelocity.x / gameVelocityConst;
 		CaffeineCollisionSystem::update(world);
+		PlayerMovementSystem::update(world, window, deltaTime, currentAccelerationFactor);
 		
 		world.getComponent<CaffeineTextComponent>(scoreText).text = "score:" + std::to_string(score);
 		updateScore();
@@ -188,8 +192,6 @@ void FlappyBirdGame::update(const float  deltaTime) {
 		despawnPipe();
 		respawnBackground();
 		
-		rotateBird();
-		birdVelocity.y += gravity * deltaTime * currentAccelerationFactor;
 		checkGameOver();
 	}
 	if (gamePaused && birdIsDying) {birdDyingAnimation(deltaTime);}
@@ -197,12 +199,6 @@ void FlappyBirdGame::update(const float  deltaTime) {
 }
 
 void FlappyBirdGame::processInput() {
-    if (window.keys[GLFW_KEY_UP] && !window.processedKeys[GLFW_KEY_UP]) {
-		window.processedKeys[GLFW_KEY_UP] = true;
-		if (!gamePaused) {
-			birdVelocity.y = boost;
-		}
-	}
 	if (window.keys[GLFW_KEY_SPACE] && !window.processedKeys[GLFW_KEY_SPACE]) {
 		window.processedKeys[GLFW_KEY_SPACE] = true;
 		if (gamePaused) {
@@ -259,12 +255,6 @@ void FlappyBirdGame::respawnBackground() {
 		}
 	}
 }
-
-void FlappyBirdGame::rotateBird() {
-	float rotation = std::abs(birdVelocity.y) / boost * 10.0f;
-	(birdVelocity.y >= 0) ? world.getComponent<CaffeineTransformComponent>(bird).rotation = rotation : world.getComponent<CaffeineTransformComponent>(bird).rotation = -rotation;
-}
-
 
 
 void FlappyBirdGame::checkGameOver() {

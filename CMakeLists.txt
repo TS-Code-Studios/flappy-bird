@@ -7,6 +7,8 @@ add_executable(flappy_bird
     src/main.cpp
         src/game/FlappyBirdGame.cpp
         include/game/FlappyBirdGame.hpp
+        include/components/PlayerMovementComponent.hpp
+        include/systems/PlayerMovementSystem.hpp
 )
 
 target_compile_features(flappy_bird PRIVATE cxx_std_20)

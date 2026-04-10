@@ -123,8 +123,6 @@ public:
 	void despawnPipe();
 	void updateScore();
 	void respawnBackground();
-
-	void rotateBird();
 };
 
 #endif //FLAPPYBIRDGAME_HPP
