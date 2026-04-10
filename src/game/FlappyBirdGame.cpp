@@ -1,6 +1,4 @@
 #include <game/FlappyBirdGame.hpp>
-#include <systems/PlayerMovementSystem.hpp>
-#include <components/PlayerMovementComponent.hpp>
 #include <iostream>
 #include <fstream>
 

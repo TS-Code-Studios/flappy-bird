@@ -2,6 +2,8 @@
 #define FLAPPYBIRDGAME_HPP
 
 #include <caffeine-gl/base.hpp>
+#include <systems/PlayerMovementSystem.hpp>
+#include <components/PlayerMovementComponent.hpp>
 
 struct PipePair {
 	CaffeineWorld& world;
