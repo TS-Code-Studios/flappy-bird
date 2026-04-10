@@ -22,7 +22,7 @@ inline void PlayerMovementSystem::update(CaffeineWorld &world, CaffeineWindow& w
 
         if (window.keys[movementComponent.jumpKey] && !window.processedKeys[movementComponent.jumpKey]) {
             window.processedKeys[movementComponent.jumpKey] = true;
-            velocityComponent.velocity->y = movementComponent.jumpBoost;
+            velocityComponent.velocity->y = movementComponent.jumpBoost + (movementComponent.jumpBoost * currentAccelerationFactor * 0.4f);
         }
 
         velocityComponent.velocity->y += movementComponent.gravity * deltaTime * currentAccelerationFactor;

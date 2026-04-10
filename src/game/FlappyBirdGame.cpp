@@ -170,8 +170,6 @@ void FlappyBirdGame::init() {
 
 	for(int i = 0; i < std::size(pipePairs); i++) {
 		pipePairs[i] = new PipePair(world, pipeVelocity);
-		pipePairs[i]->world.addComponent<CaffeineVelocityComponent>(pipePairs[i]->bottomPipe, CaffeineVelocityComponent(&pipeVelocity));
-		pipePairs[i]->world.addComponent<CaffeineVelocityComponent>(pipePairs[i]->topPipe, CaffeineVelocityComponent(&pipeVelocity));
 	}
 }
 
@@ -210,9 +208,9 @@ void FlappyBirdGame::processInput() {
 }
 
 void FlappyBirdGame::updateBackgroundVelocities() {
-    cloudVelocity.x = pipeVelocity.x * 0.6f;
-    buildingVelocity.x = pipeVelocity.x * 0.75f;
-    bushVelocity.x = pipeVelocity.x;
+    cloudVelocity.x = pipeVelocity.x * 0.3f;
+    buildingVelocity.x = pipeVelocity.x * 0.4f;
+    bushVelocity.x = pipeVelocity.x * 0.5f;
 }
 
 void FlappyBirdGame::spawnPipe() {

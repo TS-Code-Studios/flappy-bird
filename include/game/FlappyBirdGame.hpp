@@ -48,7 +48,7 @@ struct PipePair {
 		world.getComponent<CaffeineRenderComponent>(topPipe).visible = true;
 		
 		
-		gapSize = static_cast<float>(rand() % 150 + 1000);
+		gapSize = static_cast<float>(rand() % 150 + 1030);
 		yOffset = static_cast<float>(rand() % static_cast<int>(1700 - gapSize)) - 310;
 		
 		world.getComponent<CaffeineTransformComponent>(bottomPipe).position = glm::vec2(2000, yOffset);
@@ -78,14 +78,14 @@ public:
 	glm::vec2 bushVelocity;
 	glm::vec2 pipeVelocity;
 
-	const float gameVelocityConst = -200.0f;
-	const float acceleration = 10.0f;
+	const float gameVelocityConst = -400.0f;
+	const float acceleration = 15.0f;
 	float currentAccelerationFactor;
 
 	const float pipeSpawnRate = 1.8f;
 	float lastPipeSpawnTime;
 
-	const float boost = 600.0f;
+	const float boost = 450.0f;
 	const float startBoost = 100.0f;
 	const float gravity = -2300.0f;
 
