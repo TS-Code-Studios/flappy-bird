@@ -18,6 +18,7 @@ FlappyBirdGame::FlappyBirdGame() {
 
 	highScore = 0;
 	score = 0;
+	init();
 }	
 
 

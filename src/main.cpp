@@ -10,7 +10,6 @@ float deltaTime = 0.0;
 
 int main() {
 	FlappyBirdGame flappyBird;
-	flappyBird.init();
 
 	while(!flappyBird.gameShouldEnd) {
 		currentFrame = static_cast<float>(glfwGetTime());
