@@ -34,7 +34,6 @@ void FlappyBirdGame::init() {
 	CaffeineResourceManager::loadShader("shaders/default.vert", "shaders/default.frag", nullptr, "default");
 	CaffeineResourceManager::loadShader("shaders/default_text.vert", "shaders/default_text.frag", nullptr, "default_text");
 	
-	CaffeineResourceManager::loadTexture("textures/missing_texture.png", "placeholder");
 	CaffeineResourceManager::loadTexture("textures/bird.png", "bird");
 	CaffeineResourceManager::getTexture("bird").setTextureParameter(GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	CaffeineResourceManager::getTexture("bird").setTextureParameter(GL_TEXTURE_MAG_FILTER, GL_NEAREST);

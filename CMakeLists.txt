@@ -7,6 +7,7 @@ add_executable(flappy_bird
     src/main.cpp
         src/game/FlappyBirdGame.cpp
         include/game/FlappyBirdGame.hpp
+        include/game/PipePair.hpp
         include/components/PlayerMovementComponent.hpp
         include/systems/PlayerMovementSystem.hpp
 )
