@@ -35,9 +35,11 @@ public:
 
 	bool gamePaused;
 	bool birdIsDying;
+	bool gameShouldEnd;
 	
-	CaffeineWindow& window;
-	CaffeineWorld& world;
+
+	CaffeineWindow* window;
+	CaffeineWorld world;
 	CaffeineEntity bird;
 	CaffeineEntity backgroundColor, backgroundClouds, backgroundClouds2, backgroundBuildings, backgroundBuildings2, backgroundBushes, backgroundBushes2;
 	PipePair *pipePairs[10];
@@ -46,7 +48,7 @@ public:
 
 	std::vector<CaffeineEntity> backgroundEntities;
 
-	FlappyBirdGame(CaffeineWindow& window, CaffeineWorld& world);
+	FlappyBirdGame();
 	~FlappyBirdGame();
 
 	void init();

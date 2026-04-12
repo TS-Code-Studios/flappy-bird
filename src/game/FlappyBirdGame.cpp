@@ -2,7 +2,7 @@
 #include <iostream>
 #include <fstream>
 
-FlappyBirdGame::FlappyBirdGame(CaffeineWindow& window, CaffeineWorld& world) : window(window), world(world) {
+FlappyBirdGame::FlappyBirdGame() {
 	birdSpawn = glm::vec2(250.0f, 540.0f);
 
 	birdVelocity = glm::vec2(0.0f);
@@ -14,6 +14,7 @@ FlappyBirdGame::FlappyBirdGame(CaffeineWindow& window, CaffeineWorld& world) : w
 	lastPipeSpawnTime = 0.0f;
 	gamePaused = true;
 	birdIsDying = false;
+	gameShouldEnd = false;
 
 	highScore = 0;
 	score = 0;
@@ -24,9 +25,18 @@ FlappyBirdGame::~FlappyBirdGame() {
 	for(int i = 0; i < sizeof(pipePairs) / sizeof(pipePairs[0]); i++) {
 		delete pipePairs[i];
 	}
+	delete window;
+	world.clear();
+	CaffeineResourceManager::clear();
 }
 
 void FlappyBirdGame::init() {
+	window = new CaffeineWindow("Flappy Bird");
+	window->createViewport();
+	window->toggleFullscreen();
+
+	
+	
 	CaffeineResourceManager::setResourceRoot(CaffeineResourceManager::getExecutablePath() / "resources");
 
 	CaffeineResourceManager::createDefaultMeshes();
@@ -179,7 +189,7 @@ void FlappyBirdGame::update(const float  deltaTime) {
 		pipeVelocity.x = gameVelocityConst - (score * acceleration);
 		currentAccelerationFactor = pipeVelocity.x / gameVelocityConst;
 		CaffeineCollisionSystem::update(world);
-		PlayerMovementSystem::update(world, window, deltaTime, currentAccelerationFactor);
+		PlayerMovementSystem::update(world, *window, deltaTime, currentAccelerationFactor);
 		
 		world.getComponent<CaffeineTextComponent>(scoreText).text = "score:" + std::to_string(score);
 		updateScore();
@@ -194,15 +204,18 @@ void FlappyBirdGame::update(const float  deltaTime) {
 }
 
 void FlappyBirdGame::processInput() {
-	if (window.keys[GLFW_KEY_SPACE] && !window.processedKeys[GLFW_KEY_SPACE]) {
-		window.processedKeys[GLFW_KEY_SPACE] = true;
+	if (window->keys[GLFW_KEY_SPACE] && !window->processedKeys[GLFW_KEY_SPACE]) {
+		window->processedKeys[GLFW_KEY_SPACE] = true;
 		if (gamePaused) {
 			resetGame();
 		}
 	}
-	if (window.keys[GLFW_KEY_V] && !window.processedKeys[GLFW_KEY_V]) {
-		window.processedKeys[GLFW_KEY_V] = true;
-		window.toggleFullscreen();
+	if (window->keys[GLFW_KEY_V] && !window->processedKeys[GLFW_KEY_V]) {
+		window->processedKeys[GLFW_KEY_V] = true;
+		window->toggleFullscreen();
+	}
+	if (window->keys[GLFW_KEY_ESCAPE]) {
+		gameShouldEnd = true;
 	}
 }
 
@@ -345,4 +358,5 @@ void FlappyBirdGame::render(float deltaTime) {
 	CaffeineRenderingSystem::update(world);
 	CaffeineTextRenderingSystem::update(world);
 	CaffeineVelocitySystem::update(world, deltaTime);
+	window->update();
 }

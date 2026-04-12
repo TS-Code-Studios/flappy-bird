@@ -9,24 +9,15 @@ float currentFrame = 0.0;
 float deltaTime = 0.0;
 
 int main() {
-	CaffeineWindow window("Flappy Bird");
-	window.createViewport();
-	window.toggleFullscreen();
-
-	CaffeineWorld world;
-	FlappyBirdGame flappyBird(window, world);
-
+	FlappyBirdGame flappyBird;
 	flappyBird.init();
 
-	while(!window.keys[GLFW_KEY_ESCAPE]) {
+	while(!flappyBird.gameShouldEnd) {
 		currentFrame = static_cast<float>(glfwGetTime());
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 
 		flappyBird.update(deltaTime);
-		window.update();
 	}
-	world.clear();
-	CaffeineResourceManager::clear();
 	return 0;
 }
