@@ -14,4 +14,4 @@ On Linux/MacOS:
    make
 5. Run the executable:
    ```
-   ./flappy-bird
+   ./flappy_bird

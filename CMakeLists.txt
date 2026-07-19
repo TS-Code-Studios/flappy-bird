@@ -3,6 +3,8 @@ project(flappy_bird)
 
 add_subdirectory(caffeine-gl)
 
+set(GLFW_BUILD_X11 OFF CACHE BOOL "" FORCE)
+
 add_executable(flappy_bird
     src/main.cpp
         src/game/FlappyBirdGame.cpp
